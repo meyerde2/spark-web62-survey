@@ -1,0 +1,71 @@
+.row{
+    margin-top: 50px;
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-bottom:20px;
+
+}
+
+.navLogout{
+
+    display: block;
+    padding: 3px 20px;
+    clear: both;
+    font-weight: normal;
+    line-height: 1.42857143;
+    color: #333;
+    white-space: nowrap;
+
+}
+
+.not-activeAnchor{
+   cursor: not-allowed;
+}
+
+.not-activeAnchor a{
+  pointer-events: none;
+}
+
+.logoutLi a:hover, .logoutLi a:focus{
+    color: #262626;
+    text-decoration: none;
+    background-color: #f5f5f5;
+}
+
+.fileUploads{
+    margin-left: 10px !important;
+    padding-left: 10px !important;
+    margin-right: 10px !important;
+    padding-right: 10px !important;
+}
+
+
+.answers div{
+    margin:10px;
+}
+
+.progress{
+    width: 100%
+}
+/*
+.container{
+  min-height: 100%;
+  /* equal to footer height */
+  /*margin-bottom: -142px;*/
+}
+/*
+.container:after {
+  content: "";
+  display: block;
+}
+*/
+
+
+.footer{
+    background-color: #e7e7e7;
+}
+.footer div{
+    width: 200px;
+    margin: 0 auto;
+    padding-top: 70px;
+}
