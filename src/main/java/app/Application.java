@@ -19,6 +19,7 @@ import org.sql2o.Sql2o;
 import spark.*;
 import spark.debug.DebugScreen;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -27,19 +28,22 @@ import static app.util.RequestUtil.getSessionLocale;
 import static spark.Spark.*;
 
 
-public class Application {
+public class Application{
 
 
     public static UserDao userDao;
     public static SurveyDao surveyDao;
 
+    public static String picturesDir;
 
     public static  FreeMarkerEngine freeMarkerEngine;
 
     public static void main(String args[]) {
 
             Spark.staticFileLocation("/public");
+            Spark.externalStaticFileLocation("/pictures");
 
+            picturesDir=new File("").getAbsolutePath().toString() + "\\target\\classes\\public\\pictures";
             //Test
             DebugScreen.enableDebugScreen();
 
@@ -93,6 +97,13 @@ public class Application {
             post("/createNewSurvey/", SurveyController.createNewServery);
             post("/updateSurvey/:id/", SurveyController.updateSurvey);
 
+
+            post("/textupload/", SurveyController.createTextElement);
+            post("/personaldata/", SurveyController.createPersonalDataElement);
+            post("/closedquestion/", SurveyController.createClosedQuestion);
+
+        //get("/surveyTest/:id/", SurveyController.serveSurveyCreation);
+
             //User
             get("/usercontrol/", UserController.serveUsercontrolPage);
 
@@ -138,12 +149,20 @@ public class Application {
         }
         void handle(Request request) throws Exception;
     }
-/*
 
+
+/*
     @Override
     public void init() {
 
-            Spark.staticFileLocation("/public");
+
+           Spark.staticFileLocation("/public");
+           Spark.externalStaticFileLocation("/webapps/pictures");
+
+
+            picturesDir="webapps/pictures";
+            //picturesDir=new File("").getAbsolutePath().toString() + "\\target\\classes\\public\\pictures";
+            //Test
             DebugScreen.enableDebugScreen();
 
             freeMarkerEngine = new FreeMarkerEngine();
@@ -155,19 +174,20 @@ public class Application {
 
             try {
                 Class.forName("com.mysql.jdbc.Driver");
-                String DB_URL = "jdbc:mysql://localhost:3306/goodIT";
+                String DB_URL = "jdbc:mysql://localhost:3306/survey";
                 String USER = "root";
                 String PASS = "";
                 Sql2o sql2o = new Sql2o(DB_URL, USER, PASS);
 
                 userDao = new UserDaoImpl(sql2o);
-                gameDao = new GameDaoImpl(sql2o);
+                surveyDao = new SurveyDaoImpl(sql2o);
 
                 System.out.println(userDao.getAllUsers());
 
             } catch (ClassNotFoundException e) {
                 e.printStackTrace();
             }
+
 
             // Set up before-filters (called before each get/post)
             before("*", Filters.addTrailingSlashes);
@@ -183,18 +203,20 @@ public class Application {
             //Index
             get("/index/", IndexController.serveIndexPage);
 
-            //Dashboard
-            get("/dashboard/", DashboardController.serveDashboardPage);
+            //Evaluation
+            get("/evaluation/", EvaluationController.serveEvaluationPage);
 
-            //Game
-            get("/game/", GameController.serveGamePage);
-            get("/gamecontrol/", GameController.serveGamecontrolPage);
-            get("/question/:id/", GameController.serveOneQuestion);
+            //Survey
+            get("/surveyoverview/", SurveyController.serveSurveyOverview);
+            get("/surveycreation/", SurveyController.serveSurveyCreation);
+            get("/surveycreation/:id/", SurveyController.serveSurveyCreation);
+            get("/deletesurvey/:id/", SurveyController.deleteSurvey);
 
-            post("/createNewQuestion/", GameController.createNewQuestion);
-            post("/updateQuestion/", GameController.updateQuestion);
-            post("/gamescore/", GameController.evaluateGameScore);
-            post("/restartGame/", GameController.restartGame);
+            post("/createNewSurvey/", SurveyController.createNewServery);
+            post("/updateSurvey/:id/", SurveyController.updateSurvey);
+
+
+            post("/upload/", SurveyController.createTextElement);
 
             //User
             get("/usercontrol/", UserController.serveUsercontrolPage);
@@ -202,12 +224,16 @@ public class Application {
             get("/user/:username/", UserController.serveOneUser);
 
             post("/createNewUser/", UserController.serveNewUser);
+           // post("/createNewUser",                  (ICRoute) UserController.serveNewUser);
+            post("/createNewUserLogin/", UserController.serveNewUserLogin);
+
             post("/updateUser/", UserController.updateUser);
 
             //Set up after-filters (called after each get/post)
             after("*", Filters.addGzipHeader);
 
-        get("/hello", (request, response) -> {
+
+            get("/hello", (request, response) -> {
 
                 System.out.println("hello world......");
 
@@ -228,7 +254,5 @@ public class Application {
             }, new FreeMarkerEngine());
 
     }
-
 */
-
 }

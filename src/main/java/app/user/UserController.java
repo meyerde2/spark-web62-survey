@@ -123,8 +123,6 @@ public class UserController {
 
     public static Route serveNewUserLogin = (Request request, Response response) -> {
 
-        Map<String, Object> attributes = new HashMap<>();
-
             System.out.println("username:  " + request.queryParams("username"));
             System.out.println("password:  " + request.queryParams("password"));
             System.out.println("passwordConfirmed:  " + request.queryParams("passwordConfirmed"));

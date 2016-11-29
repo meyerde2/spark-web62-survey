@@ -111,8 +111,18 @@
 							<#items as element>
 							  <tr>
 								<td>${element.getElementId()}</td>
-								<td>${element.getElementTitle()}</td>
-								<td>${element.getElementType()}</td>
+								<td>
+								<#if element.getElementTitle()??>
+								${element.getElementTitle()}
+								</#if>
+								</td>
+								<td>
+									<#if element.getElementType() == 1>Text</#if>
+									<#if element.getElementType() == 2>Persönliche Daten</#if>
+									<#if element.getElementType() == 3>Geschlossene Frage</#if>
+									<#if element.getElementType() == 4>Offene Frage</#if>
+									<#if element.getElementType() == 5>Bewertungstabelle</#if>
+								</td>
 								<td><a href="/survey/${element.getSurveyId()}/element/${element.getElementId()}/"><span class="glyphicon glyphicon-pencil"></span></a></td>
 								<td><a href="/survey/${element.getSurveyId()}/element/${element.getElementId()}/"><span class="glyphicon glyphicon-remove"></span></a></td>
 							  </tr>
@@ -145,10 +155,17 @@
           </div>
           <div class="modal-body">
 
-              <form id="textElementForm" method="post">
 
-                  <div class="modalResult">
-                  </div>
+              <form id="textElementForm" name="textElementForm" method="post" enctype="multipart/form-data">
+					<div class="modalResult">
+					</div>
+
+                   <input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					
+					<div class="form-group">
+						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
+						  <input type="text" id="elementTitle" name="elementTitle"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" required>
+					</div>
 					
 					<div class="form-group">
 						<label for="textElement">${msg.get("SURVEY_TEXTELEMENT")}</label>
@@ -157,23 +174,19 @@
 					
                   <div class="form-group">
                       <label for="picture">${msg.get("SURVEY_PICTURE")}</label>
-						<input id="picture" name="picture" type="file" class="form-control file">
+						<input id="picture" name="picture" type="file" accept=".png" class="form-control file">
                   </div>
 
 
                   <div class="modal-footer">
                       <div class="form-group">
-
-                          <input type="button" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get("SURVEY_ADD")}">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-
+                          <input type="button" class="btn btn-primary" id="saveTextElement" name="saveTextElement" value="${msg.get("SURVEY_ADD")}">
+                          <button type="button" class="btn btn-default close" data-dismiss="modal">Close</button>
                       </div>
                   </div>
               </form>
-
           </div>
         </div>
-
       </div>
     </div>
 	
@@ -189,36 +202,41 @@
 		  </div>
 		  <div class="modal-body">
 
-			  <form id="personalDataElementForm" method="post">
+			  <form id="personalDataElementForm" name="personalDataElementForm" method="post">
 
 				  <div class="modalResult">
 				  </div>
+					<input type="hidden" name="surveyIdP" id="surveyIdP" value="${currentSurvey.getSurveyId()}">
 					
+					<div class="form-group">
+						  <label for="elementTitleP">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
+						  <input type="text" id="elementTitleP" name="elementTitleP"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" required>
+					</div>
 					<div class="">					
-						<input type="checkbox" name="firstname" id="firstname" class=""  value="true" />
-						<label for="firstname">${msg.get("SURVEY_FIRSTNAME")}</label>
+						<input type="checkbox" name="firstnameP" id="firstnameP" class=""  value="true" />
+						<label for="firstnameP">${msg.get("SURVEY_FIRSTNAME")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="lastname" id="lastname" class=""  value="true" />
-						<label for="lastname">${msg.get("SURVEY_LASTNAME")}</label>
+						<input type="checkbox" name="lastnameP" id="lastnameP" class=""  value="true" />
+						<label for="lastnameP">${msg.get("SURVEY_LASTNAME")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="age" id="age" class=""  value="true" />
-						<label for="age">${msg.get("SURVEY_AGE")}</label>
+						<input type="checkbox" name="ageP" id="ageP" class=""  value="true" />
+						<label for="ageP">${msg.get("SURVEY_AGE")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="gender" id="gender" class=""  value="true" />
-						<label for="gender">${msg.get("SURVEY_GENDER")}</label>
+						<input type="checkbox" name="genderP" id="genderP" class=""  value="true" />
+						<label for="genderP">${msg.get("SURVEY_GENDER")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="location" id="location" class=""  value="true" />
-						<label for="location">${msg.get("SURVEY_LOCATION")}</label>
+						<input type="checkbox" name="locationP" id="locationP" class=""  value="true" />
+						<label for="locationP">${msg.get("SURVEY_LOCATION")}</label>
 					</div>
 					
 					<div class="modal-footer">
 					  <div class="form-group">
 
-						  <input type="button" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get("SURVEY_ADD")}">
+						  <input type="button" class="btn btn-primary" id="savePersonalDataElement" name="savePersonalDataElement" value="${msg.get("SURVEY_ADD")}">
 						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 
 					  </div>
@@ -246,46 +264,51 @@
 		  </div>
 		  <div class="modal-body">
 
-			  <form id="closedQuestionElementForm" method="post">
+			  <form id="closedQuestionElementForm" name="closedQuestionElementForm" method="post" enctype="multipart/form-data">
 
 				  <div class="modalResult">
 				  </div>
+					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
 					
 					<div class="form-group col-md-12">
-						<label for="textElement">${msg.get("SURVEY_SITUATION")}</label>
-						<textarea class="form-control" name="textElement" id="textElement" rows="4" cols="50"></textarea>
+						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
+						  <input type="text" id="elementTitle" name="elementTitle"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" >
+					</div>					
+					<div class="form-group col-md-12">
+						<label for="situationC">${msg.get("SURVEY_SITUATION")}</label>
+						<textarea class="form-control" name="situation" id="situation" rows="4" cols="50"></textarea>
 					</div>
 					
 					  <div class="form-group col-md-12">
-						  <label for="question">${msg.get("SURVEY_QUESTIONTEXT")}</label>
-						  <input type="text" id="question" name="question"  class="form-control" placeholder="${msg.get('SURVEY_QUESTIONTEXT')}" value="" required>
+						  <label for="questiontextC">${msg.get("SURVEY_QUESTIONTEXT")}</label>
+						  <input type="text" id="questiontext" name="questiontext"  class="form-control" placeholder="${msg.get('SURVEY_QUESTIONTEXT')}" value="" >
 					  </div>
 					  
 					<div class="form-group col-md-6">
 					  <label for="answer1">${msg.get("SURVEY_ANSWER")}</label>
-					  <input type="text" id="answer1" name="answer1"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER')}" value="" required>
+					  <input type="text" id="answer1" name="answer1"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER')}" value="" >
 					</div>
 					<div class="form-group col-md-6">
 					  <label for="answer2">${msg.get("SURVEY_ANSWER")}</label>
-					  <input type="text" id="answer2" name="answer2"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER')}" value="" required>
+					  <input type="text" id="answer2" name="answer2"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER')}" value="" >
 					</div>
 					<div class="form-group col-md-6">
 					  <label for="answer3">${msg.get("SURVEY_ANSWER")}</label>
-					  <input type="text" id="answer3" name="answer3"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" required>
+					  <input type="text" id="answer3" name="answer3"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" >
 					</div>
 					<div class="form-group col-md-6">
 					  <label for="answer4">${msg.get("SURVEY_ANSWER")}</label>
-					  <input type="text" id="answer4" name="answer4"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" required>
+					  <input type="text" id="answer4" name="answer4"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" >
 					</div>
 					<div class="form-group col-md-6">
 					  <label for="answer5">${msg.get("SURVEY_ANSWER")}</label>
-					  <input type="text" id="answer5" name="answer5"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" required>
+					  <input type="text" id="answer5" name="answer5"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" >
 					</div>
 					<div class="form-group col-md-6">
 					  <label for="answer6">${msg.get("SURVEY_ANSWER")}</label>
-					  <input type="text" id="answer6" name="answer6"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" required>
+					  <input type="text" id="answer6" name="answer6"  class="form-control" placeholder="${msg.get('SURVEY_ANSWER_OPTIONAL')}" value="" >
 					</div>
-					
+			
 					<div class="col-md-6">				
 						<input type="checkbox" name="optionalTextfield" id="optionalTextfield" class=""  value="true" />
 						<label for="optionalTextfield">${msg.get("SURVEY_TEXTFIELD_OPTIONAL")}</label>
@@ -295,7 +318,7 @@
 						<input type="checkbox" name="multipleSelection" id="multipleSelection" class=""  value="true" />
 						<label for="multipleSelection">${msg.get("SURVEY_MULTIPLE_SELECTION")}</label>
 					</div>
-					
+			
 					<div class="form-group col-md-12">
 					  <label for="picture">${msg.get("SURVEY_PICTURE")}</label>
 						<input id="picture" name="picture" type="file" class="form-control file">
@@ -303,7 +326,7 @@
 					
 					<div class="modal-footer">
 					  <div class="form-group">
-						  <input type="button" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get('SURVEY_ADD')}">
+						  <input type="button" class="btn btn-primary" id="closedQuestionElementbuttonSave" name="closedQuestionElementbuttonSave" value="${msg.get('SURVEY_ADD')}">
 						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
 					  </div>
 				  </div>
@@ -333,6 +356,12 @@
 				  <div class="modalResult">
 				  </div>
 					
+					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					
+					<div class="form-group col-md-12">
+						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
+						  <input type="text" id="elementTitle" name="elementTitle"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" required>
+					</div>				
 					<div class="form-group col-md-12">
 						<label for="textElement">${msg.get("SURVEY_SITUATION")}</label>
 						<textarea class="form-control" name="textElement" id="textElement" rows="4" cols="50"></textarea>
@@ -351,7 +380,7 @@
 					<div class="modal-footer">
 					  <div class="form-group">
 						  <input type="button" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <button type="button" class="btn btn-default close" data-dismiss="modal">Close</button>
 					  </div>
 				  </div>
 			  </form>
@@ -381,6 +410,13 @@
 
 				  <div class="modalResult">
 				  </div>
+
+					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					
+					<div class="form-group col-md-12">
+						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
+						  <input type="text" id="elementTitle" name="elementTitle"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" required>
+					</div>	
 					
 					<div class="form-group col-md-12">
 						<label for="textElement">${msg.get("SURVEY_SITUATION")}</label>
@@ -431,7 +467,7 @@
 					<div class="modal-footer">			  					
 					  <div class="form-group">
 						  <input type="button" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <button type="button" class="btn btn-defaul close" data-dismiss="modal">Close</button>
 					  </div>
 				  </div>
 			  </form>
@@ -441,5 +477,100 @@
 
       </div>
     </div>
-	
+
+
+
+	<script>
+    $(document).ready(function(){
+        $("#saveTextElement").click(function(){
+
+			var vcfData = new FormData($('#textElementForm')[0]); 
+			alert(vcfData);
+            var request = $.ajax({
+              url: "/textupload/",
+              type: "POST",
+              data: vcfData,
+              dataType: "html",
+			  processData: false,
+				contentType: false
+            });
+
+            request.done(function(msg) {
+				
+                if("false" == msg){
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                }else{
+					location.reload();
+				}
+            });
+
+            request.fail(function(jqXHR, textStatus) {
+              $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Request failed: ' + textStatus);
+            });
+
+        });
+		
+		
+		
+		$("#savePersonalDataElement").click(function(){
+
+            var request = $.ajax({
+              url: "/personaldata/",
+              type: "POST",
+              data:  {surveyId : $('#surveyId').val(), elementTitle : $('#elementTitleP').val(), firstname : $('#firstnameP').is(':checked'), lastname : $('#lastnameP').is(':checked'), age : $('#ageP').is(':checked'),
+			  gender : $('#genderP').is(':checked'), locationP : $('#locationP').is(':checked')},
+              dataType: "html"
+
+            });
+
+            request.done(function(msg) {
+				
+                if("false" == msg){
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben und eine Checkbox auswählen.</p>');
+                }else{
+					location.reload();
+				}
+            });
+
+            request.fail(function(jqXHR, textStatus) {
+              $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Request failed: ' + textStatus);
+            });
+
+        });
+
+
+	     $("#closedQuestionElementbuttonSave").click(function(){
+
+			var vcfDataClosedQuestion = new FormData($('#closedQuestionElementForm')[0]); 
+			//alert(vcfData);
+			console.dir(vcfDataClosedQuestion);
+			alert(console.dir(vcfDataClosedQuestion));
+			console.log("Json:" + JSON.stringify(vcfDataClosedQuestion) );
+			
+
+
+            var request = $.ajax({
+              url: "/closedquestion/",
+              type: "POST",
+              data: vcfDataClosedQuestion,
+              dataType: "html",
+			  processData: false,
+				contentType: false
+            });
+
+            request.done(function(msg) {
+				
+                if("false" == msg){
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                }else{
+					location.reload();
+				}
+            });
+
+
+        });
+
+		
+    });
+    </script>
 </@layout.masterTemplate>
