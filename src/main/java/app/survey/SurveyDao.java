@@ -1,9 +1,6 @@
 package app.survey;
 
-import app.survey.elements.ClosedQuestion;
-import app.survey.elements.OpenQuestion;
-import app.survey.elements.PersonalData;
-import app.survey.elements.Text;
+import app.survey.elements.*;
 
 import java.util.List;
 
@@ -19,10 +16,22 @@ public interface SurveyDao {
     boolean updateSurvey(Survey survey);
     boolean deleteSurvey(Survey survey);
     int createNewSurveyElement(SurveyElement surveyElement);
-    boolean createNewOpenQuestion(OpenQuestion openQuestion);
     int getLatestSurveyId(int userId);
 
     boolean createTextElement(Text text);
     boolean createPersonalDataElement(PersonalData personalData);
     boolean createClosedQuestion(ClosedQuestion closedQuestion);
+    boolean createOpenQuestion(OpenQuestion openQuestion);
+    boolean createScoreTableQuestion(ScoreTable scoreTable);
+
+    SurveyElement getSurveyElementById(int surveyId, int elementId);
+
+    boolean deleteSurveyElementById(int surveyId, int elementId);
+
+    Text getTextElement(int elementId);
+    PersonalData getPersonalData(int elementId);
+    ClosedQuestion getClosedQuestion(int elementId);
+    OpenQuestion getOpenedQuestion(int elementId);
+    ScoreTable getScoreTable(int elementId);
+
 }

@@ -101,8 +101,13 @@ public class Application{
             post("/textupload/", SurveyController.createTextElement);
             post("/personaldata/", SurveyController.createPersonalDataElement);
             post("/closedquestion/", SurveyController.createClosedQuestion);
+            post("/openquestion/", SurveyController.createOpenQuestion);
+            post("/scoretable/", SurveyController.createScoreTable);
 
-        //get("/surveyTest/:id/", SurveyController.serveSurveyCreation);
+            get("/survey/:surveyId/element/:elementId/elementtype/:elementtype/", SurveyController.serveUpdateSurveyElement);
+            get("/delete/survey/:surveyId/element/:elementId/", SurveyController.deleteSurveyElement);
+
+            //get("/surveyTest/:id/", SurveyController.serveSurveyCreation);
 
             //User
             get("/usercontrol/", UserController.serveUsercontrolPage);

@@ -32,6 +32,18 @@ public class RequestUtil {
         return request.params("id");
     }
 
+    public static int getParamSurveyId(Request request) {
+        return Integer.parseInt(request.params("surveyId"));
+    }
+
+    public static int getParamElementId(Request request) {
+        return Integer.parseInt(request.params("elementId"));
+    }
+
+    public static int getParamElementtype(Request request) {
+        return Integer.parseInt(request.params("elementtype"));
+    }
+
     public static String getParamUsername(Request request){
         return request.params("username");
     }

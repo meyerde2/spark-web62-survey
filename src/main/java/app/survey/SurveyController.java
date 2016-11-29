@@ -3,9 +3,7 @@ package app.survey;
 
 import app.Application;
 import app.login.LoginController;
-import app.survey.elements.ClosedQuestion;
-import app.survey.elements.PersonalData;
-import app.survey.elements.Text;
+import app.survey.elements.*;
 import app.user.User;
 import app.util.Path;
 import app.util.ViewUtil;
@@ -299,8 +297,6 @@ public class SurveyController {
                     request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
                 }
 
-                System.out.println("SurveyController 1");
-
                 Part file = request.raw().getPart("picture");
                 String pictureFilename = savePictureFile(file);
 
@@ -316,7 +312,6 @@ public class SurveyController {
                 if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
                     return false;
                 }
-                    System.out.println("SurveyController 2");
                 if("wrongFormat".equals(pictureFilename)){
                     attributes.put("pictureUpload", "wrongFormat");
                     return false;
@@ -326,7 +321,6 @@ public class SurveyController {
                     SurveyElement surveyElement = new SurveyElement(0, surveyId, 3, request.queryParams("elementTitle").toString());
                     int elementId = surveyDao.createNewSurveyElement(surveyElement);
 
-                    System.out.println("SurveyController 3");
 
                     System.out.println("surveyElement.getElementTitle()):  " + surveyElement.getElementTitle());
                     ClosedQuestion closedQuestion = new ClosedQuestion(0, elementId, surveyElement.getElementTitle(),
@@ -345,9 +339,7 @@ public class SurveyController {
                             pictureFilename,
                             Integer.parseInt(request.queryParams("surveyId").toString()));
 
-                    System.out.println("closed.toString.  " + closedQuestion.toString());
                     surveyDao.createClosedQuestion(closedQuestion);
-                    System.out.println("SurveyController 4");
 
                 }
 
@@ -359,6 +351,183 @@ public class SurveyController {
 
         }
 
+        return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+
+    public static Route createOpenQuestion = (Request request, Response response) -> {
+
+        LoginController.ensureUserIsLoggedIn(request, response);
+
+        if (clientAcceptsHtml(request)) {
+
+            System.out.println("SurveyController serveSurveyControl create OPEN question..");
+
+            try{
+
+                Map attributes = new HashMap<>();
+                attributes.putAll(ViewUtil.getTemplateVariables(request));
+
+                if (request.raw().getAttribute("org.eclipse.jetty.multipartConfig") == null) {
+                    MultipartConfigElement multipartConfigElement = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
+                    request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+                }
+
+                Part file = request.raw().getPart("picture");
+                String pictureFilename = savePictureFile(file);
+
+                System.out.println("" + request.queryParams("surveyId"));
+                System.out.println("" + request.queryParams("elementTitle"));
+                System.out.println("" + request.queryParams("questiontext"));
+                System.out.println("" + request.queryParams("situation"));
+
+
+                int surveyId = Integer.parseInt(request.queryParams("surveyId"));
+
+                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                    return false;
+                }
+                if("wrongFormat".equals(pictureFilename)){
+                    attributes.put("pictureUpload", "wrongFormat");
+                    return false;
+                }else{
+                    System.out.println("right Format");
+
+                    SurveyElement surveyElement = new SurveyElement(0, surveyId, 4, request.queryParams("elementTitle").toString());
+                    int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+                    System.out.println("surveyElement.getElementTitle()):  " + surveyElement.getElementTitle());
+                    OpenQuestion openQuestion = new OpenQuestion(0, elementId, surveyElement.getElementTitle(),
+                            request.queryParams("situation").toString(),
+                            request.queryParams("questiontext").toString(),
+                            pictureFilename,
+                            Integer.parseInt(request.queryParams("surveyId").toString()));
+
+                    surveyDao.createOpenQuestion(openQuestion);
+
+                }
+
+            }catch (Exception e){
+                System.out.println("EXCEPTION:   " + e.toString());
+            }
+
+            return true;
+
+        }
+
+        return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+    public static Route createScoreTable = (Request request, Response response) -> {
+
+        LoginController.ensureUserIsLoggedIn(request, response);
+
+        if (clientAcceptsHtml(request)) {
+
+            System.out.println("SurveyController serveSurveyControl create scoretable..");
+
+            try{
+
+                Map attributes = new HashMap<>();
+                attributes.putAll(ViewUtil.getTemplateVariables(request));
+
+                if (request.raw().getAttribute("org.eclipse.jetty.multipartConfig") == null) {
+                    MultipartConfigElement multipartConfigElement = new MultipartConfigElement(System.getProperty("java.io.tmpdir"));
+                    request.raw().setAttribute("org.eclipse.jetty.multipartConfig", multipartConfigElement);
+                }
+
+                Part file = request.raw().getPart("picture");
+                String pictureFilename = savePictureFile(file);
+
+                System.out.println("" + request.queryParams("surveyId"));
+                System.out.println("" + request.queryParams("elementTitle"));
+                System.out.println("" + request.queryParams("questiontext"));
+                System.out.println("" + request.queryParams("situation"));
+
+
+                int surveyId = Integer.parseInt(request.queryParams("surveyId"));
+
+                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                    return false;
+                }
+                if("wrongFormat".equals(pictureFilename)){
+                    attributes.put("pictureUpload", "wrongFormat");
+                    return false;
+                }else{
+                    System.out.println("right Format");
+
+                    SurveyElement surveyElement = new SurveyElement(0, surveyId, 5, request.queryParams("elementTitle").toString());
+                    int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+                    ScoreTable scoreTable = new ScoreTable(0, elementId, surveyElement.getElementTitle(),
+                            request.queryParams("situation").toString(),
+                            request.queryParams("questiontext").toString(),
+                            request.queryParams("criterion1").toString(),
+                            request.queryParams("criterion2").toString(),
+                            request.queryParams("criterion3").toString(),
+                            request.queryParams("criterion4").toString(),
+                            request.queryParams("criterion5").toString(),
+                            request.queryParams("criterion6").toString(),
+                            pictureFilename,
+                            Integer.parseInt(request.queryParams("surveyId").toString()));
+
+                    surveyDao.createScoreTableQuestion(scoreTable);
+
+                }
+
+            }catch (Exception e){
+                System.out.println("EXCEPTION:   " + e.toString());
+            }
+
+            return true;
+
+        }
+
+        return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+
+    public static Route serveUpdateSurveyElement = (Request request, Response response) -> {
+
+        LoginController.ensureUserIsLoggedIn(request, response);
+
+        System.out.println("------------------------UPDATE--------------------------------");
+        switch (getParamElementtype(request)) {
+            case 1:
+                return dataToJson(surveyDao.getTextElement(getParamElementId(request)));
+            case 2:
+                return dataToJson(surveyDao.getPersonalData(getParamElementId(request)));
+            case 3:
+                return dataToJson(surveyDao.getClosedQuestion(getParamElementId(request)));
+            case 4:
+                return dataToJson(surveyDao.getOpenedQuestion(getParamElementId(request)));
+            case 5:
+                return dataToJson(surveyDao.getScoreTable(getParamElementId(request)));
+        }
+            return null;
+
+    };
+
+
+
+    public static Route deleteSurveyElement = (Request request, Response response) -> {
+
+        LoginController.ensureUserIsLoggedIn(request, response);
+        if (clientAcceptsHtml(request)) {
+
+            System.out.println("SurveyController createNewServery");
+            Map attributes = new HashMap<>();
+            attributes.putAll(ViewUtil.getTemplateVariables(request));
+            attributes.put("currentPage", "survey");
+
+            surveyDao.deleteSurveyElementById(getParamSurveyId(request), getParamElementId(request));
+
+            attributes.put("currentSurvey", surveyDao.getSurveyById(getParamSurveyId(request)));
+
+            response.redirect("/surveycreation/" + getParamSurveyId(request) + "/");
+            return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYCREATION));
+
+        }
         return ViewUtil.notAcceptable.handle(request, response);
     };
 

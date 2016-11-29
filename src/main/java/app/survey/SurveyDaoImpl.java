@@ -1,9 +1,6 @@
 package app.survey;
 
-import app.survey.elements.ClosedQuestion;
-import app.survey.elements.OpenQuestion;
-import app.survey.elements.PersonalData;
-import app.survey.elements.Text;
+import app.survey.elements.*;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
@@ -155,10 +152,6 @@ public class SurveyDaoImpl implements SurveyDao {
         }
     }
 
-    @Override
-    public boolean createNewOpenQuestion(OpenQuestion openQuestion) {
-        return false;
-    }
 
     @Override
     public int getLatestSurveyId(int userId) {
@@ -290,6 +283,287 @@ public class SurveyDaoImpl implements SurveyDao {
         catch (Exception e){
             System.out.println(e.toString());
             return false;
+        }
+    }
+
+    @Override
+    public boolean createOpenQuestion(OpenQuestion openQuestion) {
+        String sql =
+                "INSERT INTO openquestion(oId, elementId, situation, questiontext, picture) " +
+                        "VALUES (:oId, :elementId, :situation, :questiontext, :picture)";
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+            con.createQuery(sql)
+                    .addParameter("oId", openQuestion.getOId())
+                    .addParameter("elementId", openQuestion.getElementId())
+                    .addParameter("situation", openQuestion.getSituation())
+                    .addParameter("questiontext", openQuestion.getQuestiontext())
+                    .addParameter("picture", openQuestion.getPicture())
+                    .executeUpdate();
+
+
+            String sqlSurveyElementTitle =
+                    "INSERT INTO surveyelementtitle(surveyId, elementId, elementTitle) " +
+                            "VALUES (:surveyId, :elementId, :elementTitle) ; ";
+            con.createQuery(sqlSurveyElementTitle)
+                    .addParameter("surveyId", openQuestion.getSurveyId())
+                    .addParameter("elementId", openQuestion.getElementId())
+                    .addParameter("elementTitle", openQuestion.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean createScoreTableQuestion(ScoreTable scoreTable) {
+        String sql =
+                "INSERT INTO scoretable(sId, elementId, situation, questiontext, criterion1, criterion2, criterion3, criterion4, criterion5, criterion6, picture) " +
+                        "VALUES (:sId, :elementId, :situation, :questiontext, :criterion1, :criterion2, :criterion3, :criterion4, :criterion5, :criterion6, :picture)";
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+            con.createQuery(sql)
+                    .addParameter("sId", scoreTable.getSId())
+                    .addParameter("elementId", scoreTable.getElementId())
+                    .addParameter("situation", scoreTable.getSituation())
+                    .addParameter("questiontext", scoreTable.getQuestiontext())
+                    .addParameter("criterion1", scoreTable.getCriterion1())
+                    .addParameter("criterion2", scoreTable.getCriterion2())
+                    .addParameter("criterion3", scoreTable.getCriterion3())
+                    .addParameter("criterion4", scoreTable.getCriterion4())
+                    .addParameter("criterion5", scoreTable.getCriterion5())
+                    .addParameter("criterion6", scoreTable.getCriterion6())
+                    .addParameter("picture", scoreTable.getPicture())
+                    .executeUpdate();
+
+
+            String sqlSurveyElementTitle =
+                    "INSERT INTO surveyelementtitle(surveyId, elementId, elementTitle) " +
+                            "VALUES (:surveyId, :elementId, :elementTitle) ; ";
+            con.createQuery(sqlSurveyElementTitle)
+                    .addParameter("surveyId", scoreTable.getSurveyId())
+                    .addParameter("elementId", scoreTable.getElementId())
+                    .addParameter("elementTitle", scoreTable.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public SurveyElement getSurveyElementById(int surveyId, int elementId) {
+
+        List<SurveyElement> surveyElements;
+
+        String sql = "SELECT " +
+                "surveyelement.elementId, " +
+                "surveyelement.surveyId, " +
+                "surveyelement.elementType, " +
+                "surveyelementtitle.elementTitle " +
+                "FROM " +
+                "survey.surveyelement " +
+                "LEFT JOIN " +
+                "surveyelementtitle ON surveyelement.elementId = surveyelementtitle.elementId " +
+                "WHERE " +
+                "surveyelement.surveyid = " + surveyId +
+                " AND surveyelement.elementId = " + elementId +
+                " ORDER BY elementId ASC ;";
+
+        try (Connection conn = sql2o.open()) {
+            surveyElements = conn.createQuery(sql)
+                    .executeAndFetch(SurveyElement.class);
+        }
+
+        System.out.println("surveyElements.get(0):  " + surveyElements.get(0).toString());
+        return surveyElements.get(0);
+    }
+
+    @Override
+    public boolean deleteSurveyElementById(int surveyId, int elementId) {
+
+        try (Connection con = sql2o.open()) {
+
+            SurveyElement surveyElement = getSurveyElementById(surveyId, elementId);
+
+            String sqlDeleteElementType = "";
+
+            System.out.println("Which ElementType?  " + surveyElement.getElementType());
+            switch (surveyElement.getElementType()){
+                case 1:
+                    sqlDeleteElementType = "DELETE FROM `text` WHERE elementId = " + elementId +" ;";
+                    break;
+                case 2:
+                    System.out.println("surveyElement.getElementType()    " + surveyElement.getElementType());
+                    sqlDeleteElementType = "DELETE FROM `personaldata` WHERE elementId = " + elementId +" ;";
+                    break;
+                case 3:
+                    sqlDeleteElementType = "DELETE FROM `closedquestion` WHERE elementId = " + elementId +" ;";
+                    break;
+                case 4:
+                    sqlDeleteElementType = "DELETE FROM `openquestion` WHERE elementId = " + elementId +" ;";
+                    break;
+                case 5:
+                    sqlDeleteElementType = "DELETE FROM `scoretable` WHERE elementId = " + elementId +" ;";
+                    break;
+            }
+
+            System.out.println("SQL-String ElementType" + sqlDeleteElementType);
+            String sql = "DELETE FROM `surveyelement` WHERE`surveyId` = "+ surveyId +" AND elementId = " + elementId +" ;";
+            String sqlDeleteSurveyElementTitle = "DELETE FROM `surveyelementtitle` WHERE`surveyId` = "+ surveyId +" AND elementId = " + elementId +" ;";
+
+            con.createQuery(sql).executeUpdate();
+            con.createQuery(sqlDeleteElementType).executeUpdate();
+            con.createQuery(sqlDeleteSurveyElementTitle).executeUpdate();
+
+            return true;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public Text getTextElement(int elementId) {
+
+        List<Text> textList;
+
+        String sql = "SELECT "+
+        " text.tId,surveyelement.elementId, surveyelementtitle.elementTitle, text.text, text.picture, surveyelement.surveyId" +
+        " FROM surveyelement" +
+        " LEFT JOIN" +
+        " surveyelementtitle ON surveyelement.elementId = surveyelementtitle.elementId" +
+        " LEFT JOIN" +
+        " TEXT ON surveyelement.elementId = TEXT.elementId WHERE surveyelement.elementId = " + elementId + ";";
+
+
+        try (Connection conn = sql2o.open()) {
+            textList = conn.createQuery(sql)
+                    .executeAndFetch(Text.class);
+
+            return textList.get(0);
+        }
+
+    }
+
+    @Override
+    public PersonalData getPersonalData(int elementId) {
+        List<PersonalData> personalData;
+
+        String sql = "SELECT personaldata.pId," +
+                " surveyelement.elementId, " +
+                "surveyelementtitle.elementTitle, " +
+                "personaldata.isFirstname, " +
+                "personaldata.isLastname, " +
+                "personaldata.isAge, " +
+                "personaldata.isGender, " +
+                "personaldata.isLocation, " +
+                "surveyelement.surveyId " +
+                "FROM surveyelement " +
+                "LEFT JOIN surveyelementtitle ON surveyelement.elementId = surveyelementtitle.elementId " +
+                "LEFT JOIN personaldata ON surveyelement.elementId = personaldata.elementId " +
+                "WHERE surveyelement.elementId = " + elementId +";";
+
+
+        try (Connection conn = sql2o.open()) {
+            personalData = conn.createQuery(sql)
+                    .executeAndFetch(PersonalData.class);
+
+            return personalData.get(0);
+        }
+    }
+
+    @Override
+    public ClosedQuestion getClosedQuestion(int elementId) {
+        List<ClosedQuestion> closedQuestions;
+
+        String sql = "SELECT closedquestion.cId, " +
+                "surveyelement.elementId, " +
+                "surveyelementtitle.elementTitle, " +
+                "closedquestion.situation, " +
+                "closedquestion.questiontext, " +
+                "closedquestion.answer1, " +
+                "closedquestion.answer2, " +
+                "closedquestion.answer3, " +
+                "closedquestion.answer4, " +
+                "closedquestion.answer5, " +
+                "closedquestion.answer6, " +
+                "closedquestion.optionalTextfield, " +
+                "closedquestion.multipleSelection, " +
+                "closedquestion.picture, " +
+                "surveyelement.surveyId FROM surveyelement " +
+                "LEFT JOIN surveyelementtitle ON surveyelement.elementId = surveyelementtitle.elementId " +
+                "LEFT JOIN closedquestion ON surveyelement.elementId = closedquestion.elementId " +
+                "WHERE surveyelement.elementId = " + elementId +" ;";
+
+
+        try (Connection conn = sql2o.open()) {
+            closedQuestions = conn.createQuery(sql)
+                    .executeAndFetch(ClosedQuestion.class);
+
+            return closedQuestions.get(0);
+        }
+    }
+
+    @Override
+    public OpenQuestion getOpenedQuestion(int elementId) {
+        List<OpenQuestion> openQuestions;
+
+        String sql = "SELECT openquestion.oId, " +
+                "surveyelement.elementId, " +
+                "surveyelementtitle.elementTitle, " +
+                "openquestion.situation, " +
+                "openquestion.questiontext, " +
+                "openquestion.picture, " +
+                "surveyelement.surveyId " +
+                "FROM surveyelement " +
+                "LEFT JOIN surveyelementtitle ON surveyelement.elementId = surveyelementtitle.elementId " +
+                "LEFT JOIN openquestion ON surveyelement.elementId = openquestion.elementId " +
+                "WHERE surveyelement.elementId = " + elementId + " ;";
+
+        try (Connection conn = sql2o.open()) {
+            openQuestions = conn.createQuery(sql)
+                    .executeAndFetch(OpenQuestion.class);
+
+            return openQuestions.get(0);
+        }
+    }
+
+    @Override
+    public ScoreTable getScoreTable(int elementId) {
+        List<ScoreTable> scoreTables;
+
+        String sql = "SELECT scoretable.sId, " +
+                "surveyelement.elementId, " +
+                "surveyelementtitle.elementTitle, " +
+                "scoretable.situation, " +
+                "scoretable.questiontext, " +
+                "scoretable.criterion1, " +
+                "scoretable.criterion2, " +
+                "scoretable.criterion3, " +
+                "scoretable.criterion4, " +
+                "scoretable.criterion5, " +
+                "scoretable.criterion6, " +
+                "scoretable.picture, " +
+                "surveyelement.surveyId FROM surveyelement " +
+                "LEFT JOIN surveyelementtitle ON surveyelement.elementId = surveyelementtitle.elementId " +
+                "LEFT JOIN scoretable ON surveyelement.elementId = scoretable.elementId " +
+                "WHERE surveyelement.elementId = " + elementId +" ;";
+
+        try (Connection conn = sql2o.open()) {
+            scoreTables = conn.createQuery(sql)
+                    .executeAndFetch(ScoreTable.class);
+
+            return scoreTables.get(0);
         }
     }
 }
