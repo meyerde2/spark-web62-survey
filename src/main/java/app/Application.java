@@ -99,10 +99,19 @@ public class Application{
 
 
             post("/textupload/", SurveyController.createTextElement);
+            post("/textuploadUpdate/", SurveyController.updateTextElement);
+
             post("/personaldata/", SurveyController.createPersonalDataElement);
+            post("/personaldataUpdate/", SurveyController.updatePersonalDataElement);
+
             post("/closedquestion/", SurveyController.createClosedQuestion);
+            post("/closedquestionUpdate/", SurveyController.updateClosedQuestion);
+
             post("/openquestion/", SurveyController.createOpenQuestion);
+            post("/openquestionUpdate/", SurveyController.updateOpenQuestion);
+
             post("/scoretable/", SurveyController.createScoreTable);
+            post("/scoretableUpdate/", SurveyController.updateScoreTable);
 
             get("/survey/:surveyId/element/:elementId/elementtype/:elementtype/", SurveyController.serveUpdateSurveyElement);
             get("/delete/survey/:surveyId/element/:elementId/", SurveyController.deleteSurveyElement);

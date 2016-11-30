@@ -244,7 +244,7 @@ public class SurveyDaoImpl implements SurveyDao {
 
     @Override
     public boolean createClosedQuestion(ClosedQuestion closedQuestion) {
-        System.out.println("closedQuestion in DaoImpl:  " +  closedQuestion);
+
         String sql =
                 "INSERT INTO closedquestion(cId, elementId, situation, questiontext, answer1, answer2, answer3, answer4, answer5, answer6, optionalTextfield, multipleSelection, picture) " +
                         "VALUES (:cId, :elementId, :situation, :questiontext, :answer1, :answer2, :answer3, :answer4, :answer5, :answer6, :optionalTextfield, :multipleSelection, :picture)";
@@ -349,6 +349,252 @@ public class SurveyDaoImpl implements SurveyDao {
             con.createQuery(sqlSurveyElementTitle)
                     .addParameter("surveyId", scoreTable.getSurveyId())
                     .addParameter("elementId", scoreTable.getElementId())
+                    .addParameter("elementTitle", scoreTable.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateTextElement(Text text) {
+
+        try (Connection con = sql2o.open()) {
+
+            con.setRollbackOnException(false);
+
+            System.out.println(text.toString());
+
+            if (text.getPicture() == null || text.getPicture().length() < 1){
+
+                String sqlText ="UPDATE text SET text = :text " +
+                                "WHERE elementId = " + text.getElementId()+ " ;";
+
+                con.createQuery(sqlText).addParameter("text", text.getText()).executeUpdate().getResult();
+            }else{
+
+                String sqlText =
+                        "UPDATE text SET text = :text, picture = :picture " +
+                                "WHERE elementId = " + text.getElementId()+ " ;";
+                con.createQuery(sqlText)
+                        .addParameter("text", text.getText())
+                        .addParameter("picture", text.getPicture())
+                        .executeUpdate();
+            }
+
+            String sqlSurveyElementTitle =
+                    "UPDATE surveyelementtitle SET elementTitle = :elementTitle " +
+                            "WHERE elementId = " +text.getElementId() + " ;";
+            con.createQuery(sqlSurveyElementTitle)
+                    .addParameter("elementTitle", text.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updatePersonalDataElement(PersonalData personalData) {
+        try (Connection con = sql2o.open()) {
+
+            con.setRollbackOnException(false);
+
+            System.out.println(personalData.toString());
+
+            String sqlText =
+                    "UPDATE personaldata SET isFirstname = :isFirstname, isLastname = :isLastname, isAge = :isAge, " +
+                            "isGender = :isGender, isLocation = :isLocation " +
+                            "WHERE elementId = " + personalData.getElementId()+ " ;";
+            con.createQuery(sqlText)
+                    .addParameter("isFirstname", personalData.isFirstname())
+                    .addParameter("isLastname", personalData.isLastname())
+                    .addParameter("isAge", personalData.isAge())
+                    .addParameter("isGender", personalData.isGender())
+                    .addParameter("isLocation", personalData.isLocation())
+                    .executeUpdate();
+
+
+            String sqlSurveyElementTitle =
+                    "UPDATE surveyelementtitle SET elementTitle = :elementTitle " +
+                            "WHERE elementId = " +personalData.getElementId() + " ;";
+            con.createQuery(sqlSurveyElementTitle)
+                    .addParameter("elementTitle", personalData.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateClosedQuestion(ClosedQuestion closedQuestion) {
+        try (Connection con = sql2o.open()) {
+
+            con.setRollbackOnException(false);
+
+            if (closedQuestion.getPicture() == null || closedQuestion.getPicture().length() < 1){
+                String sql =
+                        "UPDATE closedquestion SET situation = :situation, questiontext = :questiontext, answer1 = :answer1, answer2 = :answer2, " +
+                                "answer3 = :answer3, answer4 = :answer4, answer5 = :answer5, answer6 = :answer6, optionalTextfield = :optionalTextfield, " +
+                                "multipleSelection = :multipleSelection  " +
+                                "WHERE elementId = " + closedQuestion.getElementId()+ " ;";
+                con.setRollbackOnException(false);
+                con.createQuery(sql)
+                        .addParameter("situation", closedQuestion.getSituation())
+                        .addParameter("questiontext", closedQuestion.getQuestiontext())
+                        .addParameter("answer1", closedQuestion.getAnswer1())
+                        .addParameter("answer2", closedQuestion.getAnswer2())
+                        .addParameter("answer3", closedQuestion.getAnswer3())
+                        .addParameter("answer4", closedQuestion.getAnswer4())
+                        .addParameter("answer5", closedQuestion.getAnswer5())
+                        .addParameter("answer6", closedQuestion.getAnswer6())
+                        .addParameter("optionalTextfield", closedQuestion.isOptionalTextfield())
+                        .addParameter("multipleSelection", closedQuestion.isMultipleSelection())
+                        .executeUpdate();
+            }else{
+                String sql =
+                        "UPDATE closedquestion SET situation = :situation, questiontext = :questiontext, answer1 = :answer1, answer2 = :answer2, " +
+                                "answer3 = :answer3, answer4 = :answer4, answer5 = :answer5, answer6 = :answer6, optionalTextfield = :optionalTextfield, " +
+                                "multipleSelection = :multipleSelection, picture = :picture " +
+                                "WHERE elementId = " + closedQuestion.getElementId()+ " ;";
+                con.setRollbackOnException(false);
+                con.createQuery(sql)
+                        .addParameter("situation", closedQuestion.getSituation())
+                        .addParameter("questiontext", closedQuestion.getQuestiontext())
+                        .addParameter("answer1", closedQuestion.getAnswer1())
+                        .addParameter("answer2", closedQuestion.getAnswer2())
+                        .addParameter("answer3", closedQuestion.getAnswer3())
+                        .addParameter("answer4", closedQuestion.getAnswer4())
+                        .addParameter("answer5", closedQuestion.getAnswer5())
+                        .addParameter("answer6", closedQuestion.getAnswer6())
+                        .addParameter("optionalTextfield", closedQuestion.isOptionalTextfield())
+                        .addParameter("multipleSelection", closedQuestion.isMultipleSelection())
+                        .addParameter("picture", closedQuestion.getPicture())
+                        .executeUpdate();
+
+            }
+
+            String sqlSurveyElementTitle =
+                    "UPDATE surveyelementtitle SET elementTitle = :elementTitle " +
+                            "WHERE elementId = " +closedQuestion.getElementId() + " ;";
+            con.createQuery(sqlSurveyElementTitle)
+                    .addParameter("elementTitle", closedQuestion.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateOpenQuestion(OpenQuestion openQuestion) {
+
+        try (Connection con = sql2o.open()) {
+
+            con.setRollbackOnException(false);
+
+            if (openQuestion.getPicture() == null || openQuestion.getPicture().length() < 1){
+
+                String sql =
+                        "UPDATE openquestion SET situation = :situation, questiontext = :questiontext " +
+                                "WHERE elementId = " +openQuestion.getElementId() + " ;";
+
+                con.createQuery(sql)
+                        .addParameter("situation", openQuestion.getSituation())
+                        .addParameter("questiontext", openQuestion.getQuestiontext())
+                        .executeUpdate();
+
+            }else{
+
+                String sql =
+                        "UPDATE openquestion SET situation = :situation, questiontext = :questiontext, picture = :picture " +
+                                "WHERE elementId = " +openQuestion.getElementId() + " ;";
+
+                con.createQuery(sql)
+                        .addParameter("situation", openQuestion.getSituation())
+                        .addParameter("questiontext", openQuestion.getQuestiontext())
+                        .addParameter("picture", openQuestion.getPicture())
+                        .executeUpdate();
+            }
+
+
+            String sqlSurveyElementTitle =
+                    "UPDATE surveyelementtitle SET elementTitle = :elementTitle " +
+                            "WHERE elementId = " +openQuestion.getElementId() + " ;";
+            con.createQuery(sqlSurveyElementTitle)
+                    .addParameter("elementTitle", openQuestion.getElementTitle())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateScoreTableQuestion(ScoreTable scoreTable) {
+
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+
+            if (scoreTable.getPicture() == null || scoreTable.getPicture().length() < 1){
+                String sql =
+                        "UPDATE scoretable SET situation = :situation, questiontext = :questiontext, criterion1 = :criterion1, criterion2 = :criterion2, criterion3 = :criterion3, " +
+                                "criterion4 = :criterion4, criterion5 = :criterion5, criterion6 = :criterion6 " +
+                                "WHERE elementId = " + scoreTable.getElementId() + " ;";
+                con.createQuery(sql)
+                        .addParameter("situation", scoreTable.getSituation())
+                        .addParameter("questiontext", scoreTable.getQuestiontext())
+                        .addParameter("criterion1", scoreTable.getCriterion1())
+                        .addParameter("criterion2", scoreTable.getCriterion2())
+                        .addParameter("criterion3", scoreTable.getCriterion3())
+                        .addParameter("criterion4", scoreTable.getCriterion4())
+                        .addParameter("criterion5", scoreTable.getCriterion5())
+                        .addParameter("criterion6", scoreTable.getCriterion6())
+                        .executeUpdate();
+            }else{
+                String sql =
+                        "UPDATE scoretable SET situation = :situation, questiontext = :questiontext, criterion1 = :criterion1, criterion2 = :criterion2, criterion3 = :criterion3, " +
+                                "criterion4 = :criterion4, criterion5 = :criterion5, criterion6 = :criterion6, picture = :picture " +
+                                "WHERE elementId = " + scoreTable.getElementId() + " ;";
+                con.createQuery(sql)
+                        .addParameter("situation", scoreTable.getSituation())
+                        .addParameter("questiontext", scoreTable.getQuestiontext())
+                        .addParameter("criterion1", scoreTable.getCriterion1())
+                        .addParameter("criterion2", scoreTable.getCriterion2())
+                        .addParameter("criterion3", scoreTable.getCriterion3())
+                        .addParameter("criterion4", scoreTable.getCriterion4())
+                        .addParameter("criterion5", scoreTable.getCriterion5())
+                        .addParameter("criterion6", scoreTable.getCriterion6())
+                        .addParameter("picture", scoreTable.getPicture())
+                        .executeUpdate();
+            }
+
+
+
+
+
+            String sqlSurveyElementTitle =
+                    "UPDATE surveyelementtitle SET elementTitle = :elementTitle " +
+                            "WHERE elementId = " +scoreTable.getElementId() + " ;";
+            con.createQuery(sqlSurveyElementTitle)
                     .addParameter("elementTitle", scoreTable.getElementTitle())
                     .executeUpdate();
 

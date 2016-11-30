@@ -253,6 +253,7 @@
 					</div>
 
                    <input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					<input type="hidden" name="elementId" id="elementId" value="0">
 					
 					<div class="form-group">
 						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
@@ -276,7 +277,7 @@
 
                   <div class="modal-footer">
                       <div class="form-group">
-                          <input type="button" class="btn btn-primary" id="saveTextElement" name="saveTextElement" value="${msg.get("SURVEY_ADD")}">
+                          <input type="button" class="btn btn-primary" id="saveTextElementUpdate" name="saveTextElementUpdate" value="${msg.get("SURVEY_ADD")}">
                           <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                       </div>
                   </div>
@@ -357,35 +358,36 @@
 		  </div>
 		  <div class="modal-body">
 
-			  <form id="personalDataElementFormUpdate" name="personalDataElementFormUpdate" method="post">
+			  <form id="personalDataElementFormUpdate" name="personalDataElementFormUpdate" method="post" enctype="multipart/form-data">
 
 				  <div class="modalResult">
 				  </div>
-					<input type="hidden" name="surveyIdP" id="surveyIdP" value="${currentSurvey.getSurveyId()}">
+					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					<input type="hidden" name="elementId" id="elementId" value="0">
 					
 					<div class="form-group">
-						  <label for="elementTitleP">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
-						  <input type="text" id="elementTitleP" name="elementTitleP"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" required>
+						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
+						  <input type="text" id="elementTitle" name="elementTitle"  class="form-control" placeholder="${msg.get('SURVEY_TITLE_ELEMENT')}" value="" required>
 					</div>
 					<div class="">					
-						<input type="checkbox" name="firstnameP" id="firstnameP" class=""  value="true" />
-						<label for="firstnameP">${msg.get("SURVEY_FIRSTNAME")}</label>
+						<input type="checkbox" name="firstname" id="firstname" class=""  value="true" />
+						<label for="firstname">${msg.get("SURVEY_FIRSTNAME")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="lastnameP" id="lastnameP" class=""  value="true" />
-						<label for="lastnameP">${msg.get("SURVEY_LASTNAME")}</label>
+						<input type="checkbox" name="lastname" id="lastname" class=""  value="true" />
+						<label for="lastname">${msg.get("SURVEY_LASTNAME")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="ageP" id="ageP" class=""  value="true" />
-						<label for="ageP">${msg.get("SURVEY_AGE")}</label>
+						<input type="checkbox" name="age" id="age" class=""  value="true" />
+						<label for="age">${msg.get("SURVEY_AGE")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="genderP" id="genderP" class=""  value="true" />
-						<label for="genderP">${msg.get("SURVEY_GENDER")}</label>
+						<input type="checkbox" name="gender" id="gender" class=""  value="true" />
+						<label for="gender">${msg.get("SURVEY_GENDER")}</label>
 					</div>
 					<div class="">				
-						<input type="checkbox" name="locationP" id="locationP" class=""  value="true" />
-						<label for="locationP">${msg.get("SURVEY_LOCATION")}</label>
+						<input type="checkbox" name="location" id="location" class=""  value="true" />
+						<label for="location">${msg.get("SURVEY_LOCATION")}</label>
 					</div>
 				
 					<div class="modal-footer">
@@ -508,6 +510,7 @@
 				  <div class="modalResult">
 				  </div>
 					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					<input type="hidden" name="elementId" id="elementId" value="0">
 					
 					<div class="form-group col-md-12">
 						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
@@ -653,6 +656,7 @@
 				  </div>
 					
 					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					<input type="hidden" name="elementId" id="elementId" value="0">
 					
 					<div class="form-group col-md-12">
 						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
@@ -795,6 +799,8 @@
 				  </div>
 
 					<input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
+					<input type="hidden" name="elementId" id="elementId" value="0">
+					
 					
 					<div class="form-group col-md-12">
 						  <label for="elementTitle">${msg.get("SURVEY_TITLE_ELEMENT")}</label>
@@ -898,7 +904,7 @@
 		$("#saveTextElementUpdate").click(function(){
 
 			var vcfDataUpdate = new FormData($('#textElementFormUpdate')[0]); 
-			alert(vcfData);
+			alert(vcfDataUpdate);
             var request = $.ajax({
               url: "/textuploadUpdate/",
               type: "POST",
@@ -953,19 +959,22 @@
 		
 		$("#savePersonalDataElementUpdate").click(function(){
 
-            var request = $.ajax({
+
+				var vcfPersonalDataUpdate = new FormData($('#personalDataElementFormUpdate')[0]); 
+				alert(vcfPersonalDataUpdate);
+				var request = $.ajax({
               url: "/personaldataUpdate/",
               type: "POST",
-              data:  {surveyId : $('#surveyId').val(), elementTitle : $('#elementTitleP').val(), firstname : $('#firstnameP').is(':checked'), lastname : $('#lastnameP').is(':checked'), age : $('#ageP').is(':checked'),
-			  gender : $('#genderP').is(':checked'), locationP : $('#locationP').is(':checked')},
-              dataType: "html"
-
+              data: vcfPersonalDataUpdate,
+              dataType: "html",
+			  processData: false,
+			  contentType: false
             });
 
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben und eine Checkbox auswählen.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1003,7 +1012,7 @@
 
         });
 		
-		$("#closedQuestionElementbuttonSaveUpdate").click(function(){
+		$("#closedQuestionElementbuttonUpdate").click(function(){
 
 			var vcfDataClosedQuestionUpdate = new FormData($('#closedQuestionElementFormUpdate')[0]); 
 	
@@ -1152,6 +1161,7 @@
 				if(str.indexOf('elementtype1') !== -1){
 
 					$('#textElementModalUpdate #surveyId').val(obj.surveyId);
+					$('#textElementModalUpdate #elementId').val(obj.elementId);
 					$('#textElementModalUpdate #elementTitle').val(obj.elementTitle);
 					$('#textElementModalUpdate #textElement').val(obj.text);
 					
@@ -1161,20 +1171,22 @@
 					$('#textElementModalUpdate').modal('show');
 					
 				}else if(str.indexOf('elementtype2') !== -1){
-					$('#personalDataElementModalUpdate #surveyIdP').val(obj.surveyId);
-					$('#personalDataElementModalUpdate #elementTitleP').val(obj.elementTitle);
-					$('#personalDataElementModalUpdate #firstnameP').attr("checked",obj.firstname);
-					$('#personalDataElementModalUpdate #lastnameP').attr("checked",obj.lastname);
-					$('#personalDataElementModalUpdate #ageP').attr("checked",obj.age);
-					$('#personalDataElementModalUpdate #genderP').attr("checked",obj.gender);
-					$('#personalDataElementModalUpdate #locationP').attr("checked",obj.location);
+					$('#personalDataElementModalUpdate #surveyId').val(obj.surveyId);
+					$('#personalDataElementModalUpdate #elementId').val(obj.elementId);
+					$('#personalDataElementModalUpdate #elementTitle').val(obj.elementTitle);
+					$('#personalDataElementModalUpdate #firstname').attr("checked",obj.firstname);
+					$('#personalDataElementModalUpdate #lastname').attr("checked",obj.lastname);
+					$('#personalDataElementModalUpdate #age').attr("checked",obj.age);
+					$('#personalDataElementModalUpdate #gender').attr("checked",obj.gender);
+					$('#personalDataElementModalUpdate #location').attr("checked",obj.location);
 
 					
 					$('#personalDataElementModalUpdate').modal('show');
 					
 				}else if(str.indexOf('elementtype3') !== -1){
 				
-					$('#closedQuestionElementModalUpdate #surveyId').val(obj.surveyId);
+					$('#closedQuestionElementModalUpdate #surveyId').val(obj.surveyId);					
+					$('#closedQuestionElementModalUpdate #elementId').val(obj.elementId);					
 					$('#closedQuestionElementModalUpdate #elementTitle').val(obj.elementTitle);
 					$('#closedQuestionElementModalUpdate #situation').val(obj.situation);
 					$('#closedQuestionElementModalUpdate #questiontext').val(obj.questiontext);
@@ -1195,6 +1207,7 @@
 				}else if(str.indexOf('elementtype4') !== -1){
 				
 					$('#openQuestionElementModalUpdate #surveyId').val(obj.surveyId);
+					$('#openQuestionElementModalUpdate #elementId').val(obj.elementId);		
 					$('#openQuestionElementModalUpdate #elementTitle').val(obj.elementTitle);
 					$('#openQuestionElementModalUpdate #situation').val(obj.situation);
 					$('#openQuestionElementModalUpdate #questiontext').val(obj.questiontext);
@@ -1207,6 +1220,7 @@
 				}else if(str.indexOf('elementtype5') !== -1){
 				
 					$('#scoreTableElementModalUpdate #surveyId').val(obj.surveyId);
+					$('#scoreTableElementModalUpdate #elementId').val(obj.elementId);	
 					$('#scoreTableElementModalUpdate #elementTitle').val(obj.elementTitle);
 					$('#scoreTableElementModalUpdate #situation').val(obj.situation);				
 					$('#scoreTableElementModalUpdate #questiontext').val(obj.questiontext);				

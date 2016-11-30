@@ -24,6 +24,12 @@ public interface SurveyDao {
     boolean createOpenQuestion(OpenQuestion openQuestion);
     boolean createScoreTableQuestion(ScoreTable scoreTable);
 
+    boolean updateTextElement(Text text);
+    boolean updatePersonalDataElement(PersonalData personalData);
+    boolean updateClosedQuestion(ClosedQuestion closedQuestion);
+    boolean updateOpenQuestion(OpenQuestion openQuestion);
+    boolean updateScoreTableQuestion(ScoreTable scoreTable);
+
     SurveyElement getSurveyElementById(int surveyId, int elementId);
 
     boolean deleteSurveyElementById(int surveyId, int elementId);
