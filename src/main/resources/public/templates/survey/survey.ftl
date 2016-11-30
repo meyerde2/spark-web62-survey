@@ -14,7 +14,7 @@
 					 
 					<div class="col-md-4">
 						<label for="link">${msg.get("SURVEY_LINK")}</label>
-						<a href="http://localhost:4567/surveycreation/${currentSurvey.getSurveyId()}/" id="link" name="link" target="_blank">http://localhost:4567/surveycreation/${currentSurvey.getSurveyId()}/</a>
+						<a href="http://localhost:4567/survey/execution/${currentSurvey.getSurveyId()}/" id="link" name="link" target="_blank">http://localhost:4567/survey/execution/${currentSurvey.getSurveyId()}/</a>
 					</div>
 		
 				

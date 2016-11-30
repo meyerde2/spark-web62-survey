@@ -1,6 +1,7 @@
 package app.survey;
 
 import app.survey.elements.*;
+import app.survey.executionElements.*;
 
 import java.util.List;
 
@@ -40,4 +41,12 @@ public interface SurveyDao {
     OpenQuestion getOpenedQuestion(int elementId);
     ScoreTable getScoreTable(int elementId);
 
+
+    int getLastAnsweredQuestionId(String session, int surveyId);
+
+    boolean saveExecutionText(TextExecution textExecution);
+    boolean saveExecutionPersonalData(PersonalDataExecution personalDataExecution);
+    boolean saveExecutionClosedQuestion(ClosedQuestionExecution closedQuestionExecution);
+    boolean saveExecutionOpenQuestion(OpenQuestionExecution openQuestionExecution);
+    boolean saveExecutionScoreTable(ScoreTableExecution scoreTableExecution);
 }

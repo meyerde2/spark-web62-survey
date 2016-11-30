@@ -88,7 +88,11 @@ public class Application{
             //Evaluation
             get("/evaluation/", EvaluationController.serveEvaluationPage);
 
-            //Survey
+            //Execute Survey
+            get("/survey/execution/:id/", SurveyController.serveSurveyExecutionPage);
+
+            post("/survey/executionQuestion/", SurveyController.saveSurveyExecutionQuestion);
+            //Create Survey
             get("/surveyoverview/", SurveyController.serveSurveyOverview);
             get("/surveycreation/", SurveyController.serveSurveyCreation);
             get("/surveycreation/:id/", SurveyController.serveSurveyCreation);

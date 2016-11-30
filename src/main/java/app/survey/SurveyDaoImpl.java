@@ -1,6 +1,7 @@
 package app.survey;
 
 import app.survey.elements.*;
+import app.survey.executionElements.*;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
@@ -812,4 +813,213 @@ public class SurveyDaoImpl implements SurveyDao {
             return scoreTables.get(0);
         }
     }
+
+    @Override
+    public int getLastAnsweredQuestionId(String session, int surveyId) {
+        int lastAnsweredQuestionId;
+
+        String sql = "SELECT questionId FROM execution_survey " +
+                " WHERE sessionId ='" + session + "' AND " +
+                " surveyId = " + surveyId + " " +
+                " ORDER BY questionId DESC LIMIT 1 ;";
+
+        try (Connection con = sql2o.open()) {
+
+            lastAnsweredQuestionId = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
+
+
+
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return 0;
+        }
+
+        return lastAnsweredQuestionId;
+    }
+
+    @Override
+    public boolean saveExecutionText(TextExecution textExecution) {
+        String sql =
+                "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
+                        "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+            con.createQuery(sql)
+                    .addParameter("surveyId", textExecution.getSurveyId())
+                    .addParameter("elementId", textExecution.getElementId())
+                    .addParameter("elementType", textExecution.getElementType())
+                    .addParameter("sessionId", textExecution.getSessionId())
+                    .addParameter("ipAddress", textExecution.getIpAddres())
+                    .addParameter("questionId", textExecution.getQuestionId())
+                    .executeUpdate();
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean saveExecutionPersonalData(PersonalDataExecution personalDataExecution) {
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+
+            String sql =
+                "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
+                        "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+
+            con.createQuery(sql)
+                    .addParameter("surveyId", personalDataExecution.getSurveyId())
+                    .addParameter("elementId", personalDataExecution.getElementId())
+                    .addParameter("elementType", personalDataExecution.getElementType())
+                    .addParameter("sessionId", personalDataExecution.getSessionId())
+                    .addParameter("ipAddress", personalDataExecution.getIpAddres())
+                    .addParameter("questionId", personalDataExecution.getQuestionId())
+                    .executeUpdate();
+
+            String sqlPersonalData =
+                    "INSERT INTO execution_personaldata(surveyId, elementId, firstname, lastname, age, gender, location) " +
+                            "VALUES (:surveyId, :elementId, :firstname, :lastname, :age, :gender, :location)";
+            con.createQuery(sqlPersonalData)
+                    .addParameter("surveyId", personalDataExecution.getSurveyId())
+                    .addParameter("elementId", personalDataExecution.getElementId())
+                    .addParameter("firstname", personalDataExecution.getFirstname())
+                    .addParameter("lastname", personalDataExecution.getLastname())
+                    .addParameter("age", personalDataExecution.getAge())
+                    .addParameter("gender", personalDataExecution.getGender())
+                    .addParameter("location", personalDataExecution.getLocation())
+
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean saveExecutionClosedQuestion(ClosedQuestionExecution closedQuestionExecution) {
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+
+            String sql =
+                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
+                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+            con.createQuery(sql)
+                    .addParameter("surveyId", closedQuestionExecution.getSurveyId())
+                    .addParameter("elementId", closedQuestionExecution.getElementId())
+                    .addParameter("elementType", closedQuestionExecution.getElementType())
+                    .addParameter("sessionId", closedQuestionExecution.getSessionId())
+                    .addParameter("ipAddress", closedQuestionExecution.getIpAddres())
+                    .addParameter("questionId", closedQuestionExecution.getQuestionId())
+                    .executeUpdate();
+
+
+            String sqlClosedQuestion =
+                    "INSERT INTO execution_closedquestion(surveyId, elementId, answer1, answer2, answer3, answer4, answer5, answer6, optionalTextfield) " +
+                            "VALUES (:surveyId, :elementId, :answer1, :answer2, :answer3, :answer4, :answer5, :answer6, :optionalTextfield)";
+            con.createQuery(sqlClosedQuestion)
+                    .addParameter("surveyId", closedQuestionExecution.getSurveyId())
+                    .addParameter("elementId", closedQuestionExecution.getElementId())
+                    .addParameter("answer1", closedQuestionExecution.isAnswer1())
+                    .addParameter("answer2", closedQuestionExecution.isAnswer2())
+                    .addParameter("answer3", closedQuestionExecution.isAnswer3())
+                    .addParameter("answer4", closedQuestionExecution.isAnswer4())
+                    .addParameter("answer5", closedQuestionExecution.isAnswer5())
+                    .addParameter("answer6", closedQuestionExecution.isAnswer6())
+                    .addParameter("optionalTextfield", closedQuestionExecution.getOptionalTextfield())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean saveExecutionOpenQuestion(OpenQuestionExecution openQuestionExecution) {
+
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+            String sql =
+                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
+                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+
+            con.createQuery(sql)
+                    .addParameter("surveyId", openQuestionExecution.getSurveyId())
+                    .addParameter("elementId", openQuestionExecution.getElementId())
+                    .addParameter("elementType", openQuestionExecution.getElementType())
+                    .addParameter("sessionId", openQuestionExecution.getSessionId())
+                    .addParameter("ipAddress", openQuestionExecution.getIpAddres())
+                    .addParameter("questionId", openQuestionExecution.getQuestionId())
+                    .executeUpdate();
+
+            String sqlOpenQuestion =
+                    "INSERT INTO execution_openquestion(surveyId, elementId, text) " +
+                            "VALUES (:surveyId, :elementId, :text)";
+
+            con.createQuery(sqlOpenQuestion)
+                    .addParameter("surveyId", openQuestionExecution.getSurveyId())
+                    .addParameter("elementId", openQuestionExecution.getElementId())
+                    .addParameter("text", openQuestionExecution.getText())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+    @Override
+    public boolean saveExecutionScoreTable(ScoreTableExecution scoreTableExecution) {
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+
+            String sql =
+                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
+                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+            con.createQuery(sql)
+                    .addParameter("surveyId", scoreTableExecution.getSurveyId())
+                    .addParameter("elementId", scoreTableExecution.getElementId())
+                    .addParameter("elementType", scoreTableExecution.getElementType())
+                    .addParameter("sessionId", scoreTableExecution.getSessionId())
+                    .addParameter("ipAddress", scoreTableExecution.getIpAddres())
+                    .addParameter("questionId", scoreTableExecution.getQuestionId())
+                    .executeUpdate();
+
+            String sqlScoreTable =
+                    "INSERT INTO execution_scoretable(surveyId, elementId, criterion1, criterion2, criterion3, criterion4, criterion5, criterion6) " +
+                            "VALUES (:surveyId, :elementId, :criterion1, :criterion2, :criterion3, :criterion4, :criterion5, :criterion6)";
+            con.createQuery(sqlScoreTable)
+                    .addParameter("surveyId", scoreTableExecution.getSurveyId())
+                    .addParameter("elementId", scoreTableExecution.getElementId())
+                    .addParameter("criterion1", scoreTableExecution.getCriterion1())
+                    .addParameter("criterion2", scoreTableExecution.getCriterion2())
+                    .addParameter("criterion3", scoreTableExecution.getCriterion3())
+                    .addParameter("criterion4", scoreTableExecution.getCriterion4())
+                    .addParameter("criterion5", scoreTableExecution.getCriterion5())
+                    .addParameter("criterion6", scoreTableExecution.getCriterion6())
+                    .executeUpdate();
+
+            return true;
+        }
+        catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+    }
+
+
 }

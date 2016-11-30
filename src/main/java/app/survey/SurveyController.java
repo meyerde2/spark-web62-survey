@@ -4,9 +4,11 @@ package app.survey;
 import app.Application;
 import app.login.LoginController;
 import app.survey.elements.*;
+import app.survey.executionElements.*;
 import app.user.User;
 import app.util.Path;
 import app.util.ViewUtil;
+import com.google.common.base.Strings;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -20,6 +22,7 @@ import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import static app.Application.surveyDao;
@@ -810,6 +813,254 @@ public class SurveyController {
 
             response.redirect("/surveycreation/" + getParamSurveyId(request) + "/");
             return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYCREATION));
+
+        }
+        return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+
+    public static Route serveSurveyExecutionPage = (Request request, Response response) -> {
+
+        if (clientAcceptsHtml(request)) {
+
+            System.out.println("SurveyController serveSurveyExecutionPage");
+            Map attributes = new HashMap<>();
+            attributes.putAll(ViewUtil.getTemplateVariables(request));
+            attributes.put("currentPage", "survey");
+
+            ///
+            ////
+
+
+            ///Existiert bereits eine Session-ID?
+            System.out.println("session_id:  " + request.session().id());
+
+            int lastQuestionId = surveyDao.getLastAnsweredQuestionId(request.session().id(), Integer.parseInt(getParamId(request)));
+            List<SurveyElement> allSurveyElements = surveyDao.getAllSurveyElements(Integer.parseInt(getParamId(request)));
+
+
+            System.out.println("lastQuestionId:   " + lastQuestionId);
+
+            int elementId = 0;
+            int elementType = 0;
+            if(lastQuestionId == 0){
+                //new survey execution
+                System.out.println("new survey execution = lastQuestionId == " + lastQuestionId);
+                elementType = allSurveyElements.get(0).getElementType();
+                switch (elementType){
+                    case 1:
+                        Text text = surveyDao.getTextElement(allSurveyElements.get(0).getElementId());
+                        attributes.put("currentSurveyText", text);
+                        elementId = text.getElementId();
+                        break;
+                    case 2:
+                        PersonalData personalData = surveyDao.getPersonalData(allSurveyElements.get(0).getElementId());
+                        attributes.put("currentSurveyPersonalData", personalData);
+                        elementId = personalData.getElementId();
+                        break;
+                    case 3:
+                        ClosedQuestion closedQuestion = surveyDao.getClosedQuestion(allSurveyElements.get(0).getElementId());
+                        attributes.put("currentSurveyClosedQuestion", closedQuestion);
+                        elementId = closedQuestion.getElementId();
+                        break;
+                    case 4:
+                        OpenQuestion openQuestion = surveyDao.getOpenedQuestion(allSurveyElements.get(0).getElementId());
+                        attributes.put("currentSurveyOpenQuestion", openQuestion);
+                        elementId = openQuestion.getElementId();
+                        break;
+                    case 5:
+                        ScoreTable scoreTable = surveyDao.getScoreTable(allSurveyElements.get(0).getElementId());
+                        attributes.put("currentSurveyScoreTable", scoreTable);
+                        elementId = scoreTable.getElementId();
+                        break;
+                }
+
+            }else if(lastQuestionId < allSurveyElements.size()){
+                // next Question
+
+                System.out.println("next Question == lastQuestionId ==" + lastQuestionId + " allsurveyelements.size()= " +allSurveyElements.size() );
+                elementType = allSurveyElements.get(lastQuestionId).getElementType();
+                switch (elementType){
+                    case 1:
+                        Text text = surveyDao.getTextElement(allSurveyElements.get(lastQuestionId).getElementId());
+                        attributes.put("currentSurveyText", text);
+                        elementId = text.getElementId();
+                        break;
+                    case 2:
+                        PersonalData personalData = surveyDao.getPersonalData(allSurveyElements.get(lastQuestionId).getElementId());
+                        attributes.put("currentSurveyPersonalData", personalData);
+                        elementId = personalData.getElementId();
+                        break;
+                    case 3:
+                        ClosedQuestion closedQuestion = surveyDao.getClosedQuestion(allSurveyElements.get(lastQuestionId).getElementId());
+                        attributes.put("currentSurveyClosedQuestion", closedQuestion);
+                        elementId = closedQuestion.getElementId();
+                        break;
+                    case 4:
+                        OpenQuestion openQuestion = surveyDao.getOpenedQuestion(allSurveyElements.get(lastQuestionId).getElementId());
+                        attributes.put("currentSurveyOpenQuestion", openQuestion);
+                        elementId = openQuestion.getElementId();
+                        break;
+                    case 5:
+                        ScoreTable scoreTable = surveyDao.getScoreTable(allSurveyElements.get(lastQuestionId).getElementId());
+                        attributes.put("currentSurveyScoreTable", scoreTable);
+                        elementId = scoreTable.getElementId();
+                        break;
+                }
+
+
+            }else{
+                //survey end
+                System.out.println("END OF GAME!!!!!!!!!!!!!!!!!!!!");
+                return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEND));
+            }
+
+
+            System.out.println("Client-IP-Address:  ____ : " + request.ip());
+
+            attributes.put("elementId", elementId);
+            attributes.put("elementType", elementType);
+            attributes.put("currentSurvey", surveyDao.getSurveyById(Integer.parseInt(getParamId(request))));
+
+            return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEXECUTION));
+
+        }
+        return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+
+
+    public static Route saveSurveyExecutionQuestion = (Request request, Response response) -> {
+
+        if (clientAcceptsHtml(request)) {
+
+            System.out.println("---------------------SurveyController SAVE SURVEY EXECUTION------------------");
+            Map attributes = new HashMap<>();
+            attributes.putAll(ViewUtil.getTemplateVariables(request));
+            attributes.put("currentPage", "survey");
+
+            ///
+            ////
+
+
+            ///Existiert bereits eine Session-ID?
+            System.out.println("session_id:  " + request.session().id());
+            String sessionId = request.session().id();
+            int surveyId= Integer.parseInt(request.queryParams("surveyId"));
+            int questionId = surveyDao.getLastAnsweredQuestionId(request.session().id(), surveyId) + 1;
+            int elementType = Integer.parseInt(request.queryParams("elementType"));
+            int elementId = Integer.parseInt(request.queryParams("elementId"));
+            System.out.println("ELEMENTID ==========" + elementId);
+            System.out.println("ELEMENTTYPE ==========" + elementType);
+
+            String ipAddress = request.ip();
+
+
+            int resultId = 0;
+                switch (elementType){
+                    case 1:
+                        //TextExecution
+                        surveyDao.saveExecutionText(new TextExecution(0, surveyId, elementId,elementType, sessionId, ipAddress, questionId));
+                        break;
+                    case 2:
+                        //PersonalDataExecution
+                        if (!Strings.isNullOrEmpty(request.queryParams("firstname"))
+                                || !Strings.isNullOrEmpty(request.queryParams("lastname"))
+                                || !Strings.isNullOrEmpty(request.queryParams("age"))
+                                || !Strings.isNullOrEmpty(request.queryParams("gender"))
+                                || !Strings.isNullOrEmpty(request.queryParams("location"))){
+
+                            //new Personal Data Object needed
+                            surveyDao.saveExecutionPersonalData(new PersonalDataExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
+                                    request.queryParams("firstname"),
+                                    request.queryParams("lastname"),
+                                    Integer.parseInt(request.queryParams("age")),
+                                    Integer.parseInt(request.queryParams("gender")),
+                                    request.queryParams("location")));
+                        }else{
+                            resultId = -1;
+                        }
+                        break;
+                    case 3:
+                        //closedQuestionExecution
+                        boolean answer1 = false, answer2 = false, answer3 = false, answer4 = false, answer5 =false, answer6 = false;
+                        if(!Strings.isNullOrEmpty(request.queryParams("answer"))){
+
+                            switch(Integer.parseInt(request.queryParams("answer"))){
+                                case 1:
+                                    answer1 = true;
+                                    break;
+                                case 2:
+                                    answer2 = true;
+                                    break;
+                                case 3:
+                                    answer3 = true;
+                                    break;
+                                case 4:
+                                    answer4 = true;
+                                    break;
+                                case 5:
+                                    answer5 = true;
+                                    break;
+                                case 6:
+                                    answer6 = true;
+                                    break;
+                            }
+
+                        }else{
+
+                            answer1 = Boolean.parseBoolean(request.queryParams("answer1"));
+                            answer2 = Boolean.parseBoolean(request.queryParams("answer2"));
+                            answer3 = Boolean.parseBoolean(request.queryParams("answer3"));
+                            answer4 = Boolean.parseBoolean(request.queryParams("answer4"));
+                            answer5 = Boolean.parseBoolean(request.queryParams("answer5"));
+                            answer6 = Boolean.parseBoolean(request.queryParams("answer6"));
+
+                        }
+
+                        surveyDao.saveExecutionClosedQuestion(new ClosedQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
+                                answer1, answer2, answer3, answer4, answer5, answer6,
+                                request.queryParams("optionalTextfield")));
+                        break;
+                    case 4:
+                        surveyDao.saveExecutionOpenQuestion(new OpenQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId, request.queryParams("textfield")));
+                        break;
+                    case 5:
+                        int criterion1 = 0, criterion2 = 0, criterion3 = 0, criterion4 = 0, criterion5 =0, criterion6 = 0;
+
+
+                        if(!Strings.isNullOrEmpty(request.queryParams("criterion1")))
+                                criterion1 = Integer.parseInt(request.queryParams("criterion1"));
+
+                        if(!Strings.isNullOrEmpty(request.queryParams("criterion2")))
+                            criterion2 = Integer.parseInt(request.queryParams("criterion2"));
+
+                        if(!Strings.isNullOrEmpty(request.queryParams("criterion3")))
+                            criterion3 = Integer.parseInt(request.queryParams("criterion3"));
+
+                        if(!Strings.isNullOrEmpty(request.queryParams("criterion4")))
+                            criterion4 = Integer.parseInt(request.queryParams("criterion4"));
+
+                        if(!Strings.isNullOrEmpty(request.queryParams("criterion5")))
+                            criterion5 = Integer.parseInt(request.queryParams("criterion5"));
+
+                        if(!Strings.isNullOrEmpty(request.queryParams("criterion6")))
+                            criterion6 = Integer.parseInt(request.queryParams("criterion6"));
+
+
+                        surveyDao.saveExecutionScoreTable(new ScoreTableExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
+                                criterion1, criterion2, criterion3, criterion4, criterion5, criterion6));
+                        break;
+                }
+
+
+            System.out.println("RESULT OF SAVING  -------------- : " + resultId);
+            attributes.put("elementId", elementId);
+            attributes.put("elementType", elementType);
+            attributes.put("currentSurvey", surveyDao.getSurveyById(surveyId));
+
+            response.redirect("/survey/execution/" + surveyId +"/");
+            return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEXECUTION));
 
         }
         return ViewUtil.notAcceptable.handle(request, response);

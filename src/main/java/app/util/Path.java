@@ -20,7 +20,6 @@ public final class Path {
         @Getter public static final String EVALUATION ="/evaluation/";
         @Getter public static final String SURVEYCREATION ="/surveycreation/";
         @Getter public static final String SURVEY ="/surveyoverview/";
-
     }
 
     public static class Template {
@@ -28,10 +27,10 @@ public final class Path {
         public static final String LOGIN = "login/login.ftl";
         public static final String USERCONTROL = "usercontrol/usercontrol.ftl";
         public static final String SURVEYCREATION = "survey/survey.ftl";
+        public static final String SURVEYEXECUTION = "survey/surveyExecution.ftl";
         public static final String EVALUATION = "evaluation/evaluation.ftl";
         public static final String NOT_FOUND = "notFound.ftl";
-        public static final String SURVEYEND = "survey/surveyend.ftl";
-        public static final String SURVEYSTART = "survey/surveystart.ftl";
+        public static final String SURVEYEND = "survey/surveyEnd.ftl";
         public static final String SURVEYOVERVIEW = "survey/surveyOverview.ftl";
         public static final String UPDATESURVEY = "survey/updateSurvey.ftl";
         public static final String UPDATEUSER = "usercontrol/updateUser.ftl";
