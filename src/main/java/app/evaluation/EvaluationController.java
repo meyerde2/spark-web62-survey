@@ -16,6 +16,7 @@ import static app.Application.userDao;
 import static app.util.JsonUtil.dataToJson;
 import static app.util.RequestUtil.clientAcceptsHtml;
 import static app.util.RequestUtil.clientAcceptsJson;
+import static app.util.RequestUtil.getParamId;
 
 
 public class EvaluationController {
@@ -28,10 +29,14 @@ public class EvaluationController {
             System.out.println("EvaluationController serveEvaluationPage");
             Map attributes = new HashMap<>();
             attributes.putAll(ViewUtil.getTemplateVariables(request));
-
-            attributes.put("users", userDao.getAllUserNames());
-
             attributes.put("currentPage", "evaluation");
+
+            int surveyId = Integer.parseInt(getParamId(request));
+
+
+            System.out.println("SurveyId=  " + surveyId);
+
+
             return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.EVALUATION));
         }
         if (clientAcceptsJson(request)) {

@@ -9,15 +9,17 @@
 
 			<div class="panel-body">
 		  
-				<div class="table-responsive">
+				<div class="">
+				
 				  <table class="table table-striped">
 					<thead>
 					  <tr>
 						<th>ID</th>
 						<th>Titel</th>
-						<th>Veröffentlicht?</th>
-						<th>bearbeiten?</th>
-						<th>löschen?</th>
+						<th data-breakpoints="xs">Status</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">bearbeiten</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">auswerten</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">löschen</th>
 					  </tr>
 					</thead>
 					<tbody>
@@ -25,11 +27,12 @@
 						<#list surveyList>
 
 							<#items as element>
-							  <tr>
+							  <tr data-expanded="true">
 								<td>${element.getSurveyId()}</td>
 								<td>${element.getSurveyTitle()}</td>
 								<td>${element.isPublished()?c}</td>
 								<td><a href="/surveycreation/${element.getSurveyId()}/"><span class="glyphicon glyphicon-pencil"></span></a></td>
+								<td><a href="/evaluation/${element.getSurveyId()}/"><span class="glyphicon glyphicon-stats"></span></a></td>
 								<td><a href="#" data-toggle="modal" data-target="#confirm${element.getSurveyId()}"><span class="glyphicon glyphicon-remove"></span></a></td>
 							  </tr>
 							
@@ -56,8 +59,8 @@
 											<div class="modal-footer">
 											<div class="form-group">
 
-											  <a href="/deletesurvey/${element.getSurveyId()}/" class="btn btn-primary">Löschen</a>
-											  <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+											  <a href="/deletesurvey/${element.getSurveyId()}/" class="btn btn-primary">${msg.get("COMMON_DELETE")}</a>
+											  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 											</div>
 											</div>
@@ -77,7 +80,7 @@
 				</div>
 			</div>
 
-            <a href="#" data-toggle="modal" data-target="#createSurvey" class="btn btn-primary">Neue Umfrage erstellen?</a>
+            <a href="#" id="newSurvey" data-toggle="modal" data-target="#createSurvey" class="btn btn-primary">Neue Umfrage erstellen?</a>
         </div>
     </div>
 
@@ -129,7 +132,7 @@
 								<div class="form-group">
 
 								  <input type="submit" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get("SURVEY_ADD")}">
-								  <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+								  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 								</div>
 								</div>
@@ -146,7 +149,12 @@
 	
 	
 	
+	<script>
 	
+	jQuery(function($){
+		$('.table').footable();
+	});
+	</script>
 	
 	
 </@layout.masterTemplate>

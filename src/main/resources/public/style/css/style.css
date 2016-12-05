@@ -40,9 +40,22 @@
 }
 
 
+.indexAdvertisement{
+   font-weight:bold;
+}
+
+#newSurvey{
+    margin-left: 20px;
+    margin-bottom: 20px;
+}
 .answers div{
     margin:10px;
 }
+
+.noEvaluation{
+    background-color: #BDBDBD;
+}
+
 
 .progress{
     width: 100%
@@ -59,6 +72,9 @@
   display: block;
 }
 */
+
+
+
 
 
 .footer{

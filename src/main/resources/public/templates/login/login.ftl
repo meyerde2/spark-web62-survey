@@ -1,7 +1,32 @@
 <#import "/masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="Login">
 
-      <h1>${msg.get("LOGIN_HEADING")}</h1>
+
+<div class="col-md-8">
+
+    <h1>${msg.get("INDEX_HEADING")}</h1>
+    <p>
+    Eine Online-Umfrage stellt im Allgemeinen einen digitalen Fragebogen dar, der im Webbrowser beantwortet wird und prinzipiell zwei Strukturtypen enthält,
+    wozu offene und geschlossene Fragen zählen. Bei offenen Fragen haben die Befragten die Möglichkeit sich frei zu äußern,
+    sodass der Befragte beliebige Antworten mit eigenen Worten abgeben kann. Geschlossene Fragen stellen das Gegenteil dar und geben sämtliche Antwortmöglichkeiten vor,
+    wodurch folglich keine freie Antwortwahl für den Befragten existiert.
+    </p>
+    <p>
+       Bei der Konstruktion eines Fragenbogens gilt es darauf zu achten,
+       dass sowohl die inhaltliche als auch die optische Gestaltung des Fragenbogens qualitativ hochwertig ist,
+       damit der Fragebogen als Instrument zur Datenerhebung ernsthaft geeignet ist.
+       Insbesondere die Reihenfolge der Fragen muss zwingend bei der Erstellung eines Fragebogens beachtet und durchdacht werden.
+       Dabei ist es sinnvoll mit einfachen Fragestellungen die Umfrage zu beginnen und sukzessive zu komplexeren Zusammenhängen hinüberzuleiten.
+       Dies ist darauf zurückzuführen, um den Befragten nicht zu schnell durch zu schwierige Fragen zu überfordern und zugleich zu demotivieren.
+    </p>
+    <p class="indexAdvertisement">Genau dies ist mittels WebSurvey62 effizient möglich! Überzeugen Sie sich selbst und melden Sie sich an.</p>
+    <img src="/img/surveyCreation.png" class="img-thumbnail"></img>
+
+</div>
+
+<div class="col-md-4">
+
+  <h1>${msg.get("LOGIN_HEADING")}</h1>
 
 
   <form id="loginForm" method="post">
@@ -86,7 +111,7 @@
                       <div class="form-group">
 
                           <input type="button" class="btn btn-primary" id="buttonSave" name="buttonSave" value="${msg.get("USER_CREATE")}">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
                       </div>
                   </div>
@@ -97,7 +122,7 @@
 
       </div>
     </div>
-
+</div>
 <script>
 $(document).ready(function(){
     $("#buttonSave").click(function(){

@@ -11,10 +11,10 @@
       <tr>
         <th>ID</th>
         <th>Benutzername</th>
-        <th>Vorname</th>
-        <th>Name</th>
-        <th>Rolle</th>
-        <th>bearbeiten?</th>
+        <th data-type="html" data-sort-use="text" data-breakpoints="xs">Vorname</th>
+        <th data-type="html" data-sort-use="text" data-breakpoints="xs">Name</th>
+        <th data-type="html" data-sort-use="text" data-breakpoints="xs">Rolle</th>
+        <th data-type="html" data-sort-use="text" data-breakpoints="xs">bearbeiten?</th>
       </tr>
     </thead>
     <tbody>
@@ -22,7 +22,7 @@
 		<#list users>
 		
 			<#items as user>
-			  <tr>
+			  <tr data-expanded="true">
 				<td>${user.getId()}</td>
 				<td>${user.getUsername()}</td>
 				<td>${user.getFirstname()}</td>
@@ -47,7 +47,7 @@
 </div>
 </div>
 
-
+<h2>Benutzer erstellen</h2>
 
 <form action="/createNewUser/" id="userForm" method="post">
 
@@ -101,4 +101,13 @@
     </div>
 </form>
 
+
+<script>
+
+	jQuery(function($){
+		$('.table').footable();
+	});
+
+</script>
+	
 </@layout.masterTemplate>

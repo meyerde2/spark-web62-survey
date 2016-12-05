@@ -5,16 +5,20 @@
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 
-        <link rel="stylesheet" href="/bootstrap/css/bootstrap.css">
 
+        <link rel="stylesheet" href="/style/css/footable.bootstrap.css">
+        <link rel="stylesheet" href="/style/css/bootstrap.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="/bootstrap/js/bootstrap.js"></script>
-        <script src="/bootstrap/js/intercooler-0.9.6.min.js"></script>
 
-        <link rel="stylesheet" href="/style.css">
+        <script src="/style/js/bootstrap.js"></script>
+
+        <script src="/style/js/footable.js"></script>
+
+        <link rel="stylesheet" href="/style/css/style.css">
 
         <link rel="icon" href="/img/favicon.png">
         <meta name="viewport" content="width=device-width, initial-scale=1">
+
     </head>
     <body>
     <header>
@@ -35,19 +39,14 @@
                 <div id="navbar" class="navbar-collapse collapse">
                     <ul class="nav navbar-nav">
 
-
                         <li <#if currentPage?? && currentPage == "index"> class="active"</#if>><a href="${WebPath.getINDEX()}"><span class="glyphicon glyphicon-home"></span>  ${msg.get("COMMON_NAV_INDEX")}</a></li>
-
-                        <li <#if currentPage?? && currentPage == "evaluation"> class="active"</#if>><a href="${WebPath.getEVALUATION()}" ><span class="glyphicon glyphicon-stats"></span>  ${msg.get("COMMON_NAV_EVALUATION")}</a></li>
                         <li <#if currentPage?? && currentPage == "survey"> class="active"</#if>><a href="${WebPath.getSURVEY()}" ><span class="glyphicon glyphicon-play"></span>  ${msg.get("COMMON_NAV_SURVEY")}</a></li>
-
 
                         <li class="dropdown nav navbar-right  <#if currentPage?? && currentPage == "usercontrol" || currentPage == "surveycontrol"> active</#if>">
                         <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false"><span class="glyphicon glyphicon-cog"></span>  Administrationsbereich<span class="caret"></span></a>
 
                         <ul class="dropdown-menu">
                             <li <#if currentPage?? && currentPage == "usercontrol"> class="active"</#if> <#if currentRole?? && currentRole == 2> class="not-activeAnchor" </#if> ><a href="${WebPath.getUSERCONTROL()}"><span class="glyphicon glyphicon-user"></span>  ${msg.get("COMMON_NAV_USERCONTROL")}</a></li>
-                            <li <#if currentPage?? && currentPage == "gamecontrol"> class="active"</#if> <#if currentRole?? && currentRole == 2> class="not-activeAnchor" </#if> ><a href="${WebPath.getSURVEYCREATION()}"><span class="glyphicon glyphicon-play"></span>  ${msg.get("COMMON_NAV_SURVEYCONTROL")}</a></li>
 
                             <li role="separator" class="divider"></li>
 

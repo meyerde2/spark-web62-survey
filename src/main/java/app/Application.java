@@ -1,6 +1,8 @@
 package app;
 
 import app.evaluation.EvaluationController;
+import app.evaluation.EvaluationDao;
+import app.evaluation.EvaluationDaoImpl;
 import app.index.IndexController;
 import app.login.LoginController;
 import app.survey.SurveyController;
@@ -33,6 +35,7 @@ public class Application{
 
     public static UserDao userDao;
     public static SurveyDao surveyDao;
+    public static EvaluationDao evaluationDao;
 
     public static String picturesDir;
 
@@ -63,6 +66,7 @@ public class Application{
 
                 userDao = new UserDaoImpl(sql2o);
                 surveyDao = new SurveyDaoImpl(sql2o);
+                evaluationDao = new EvaluationDaoImpl(sql2o);
 
                 System.out.println(userDao.getAllUsers());
 
@@ -86,7 +90,7 @@ public class Application{
             get("/index/", IndexController.serveIndexPage);
 
             //Evaluation
-            get("/evaluation/", EvaluationController.serveEvaluationPage);
+            get("/evaluation/:id/", EvaluationController.serveEvaluationPage);
 
             //Execute Survey
             get("/survey/execution/:id/", SurveyController.serveSurveyExecutionPage);

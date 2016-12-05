@@ -144,7 +144,7 @@ public class SurveyController {
 
             attributes.put("currentSurvey", surveyDao.getSurveyById(surveyId));
 
-            attributes.put("surveyElements", surveyDao.getAllSurveyElements(0));
+            attributes.put("surveyElements", surveyDao.getAllSurveyElements(surveyId));
 
             attributes.put("currentPage", "survey");
             return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYCREATION));
@@ -835,17 +835,39 @@ public class SurveyController {
             ///Existiert bereits eine Session-ID?
             System.out.println("session_id:  " + request.session().id());
 
-            int lastQuestionId = surveyDao.getLastAnsweredQuestionId(request.session().id(), Integer.parseInt(getParamId(request)));
-            List<SurveyElement> allSurveyElements = surveyDao.getAllSurveyElements(Integer.parseInt(getParamId(request)));
+            int surveyId = Integer.parseInt(getParamId(request));
+            Survey  survey = surveyDao.getSurveyById(surveyId);
+
+            if (!survey.isPublished){
+                attributes.put("currentSurvey", surveyDao.getSurveyById(Integer.parseInt(getParamId(request))));
+                attributes.put("draft", true);
+
+
+                return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEND));
+            }
+            String ipAddress = request.ip();
+            String sessionId = request.session().id();
+
+            int lastQuestionId = 0;
+
+            int executionId = surveyDao.getLatestExecutionId(sessionId,surveyId,ipAddress);
+
+            lastQuestionId = surveyDao.getLastAnsweredQuestionId(survey.isSessionId(), sessionId, survey.isIpAddress(), ipAddress, surveyId, executionId);
+
+            List<SurveyElement> allSurveyElements = surveyDao.getAllSurveyElements(surveyId);
 
 
             System.out.println("lastQuestionId:   " + lastQuestionId);
+            System.out.println("executionId:   " + executionId);
 
             int elementId = 0;
             int elementType = 0;
             if(lastQuestionId == 0){
                 //new survey execution
                 System.out.println("new survey execution = lastQuestionId == " + lastQuestionId);
+
+                surveyDao.insertExecutionEnd(sessionId, surveyId, ipAddress);
+
                 elementType = allSurveyElements.get(0).getElementType();
                 switch (elementType){
                     case 1:
@@ -912,6 +934,27 @@ public class SurveyController {
             }else{
                 //survey end
                 System.out.println("END OF GAME!!!!!!!!!!!!!!!!!!!!");
+
+                System.out.println("survey.isIpAddress().  " + survey.isIpAddress());
+                System.out.println("survey.isSessionId().  " + survey.isSessionId());
+                if (survey.isIpAddress() && survey.isSessionId()) {
+
+                    attributes.put("multipleSurveyExecution", false);
+
+                }else if(survey.isIpAddress() ){
+                    attributes.put("multipleSurveyExecution", false);
+
+                }else{
+                    if(survey.isSessionId()){
+                        attributes.put("multipleSurveyExecution", false);
+                    }else{
+                        System.out.println("UPDAT EXECUTION ID");
+                        surveyDao.updateExecutionEnd(sessionId, surveyId, ipAddress, executionId);
+                        attributes.put("multipleSurveyExecution", true);
+                    }
+                }
+                attributes.put("currentSurvey", surveyDao.getSurveyById(Integer.parseInt(getParamId(request))));
+
                 return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEND));
             }
 
@@ -947,14 +990,17 @@ public class SurveyController {
             System.out.println("session_id:  " + request.session().id());
             String sessionId = request.session().id();
             int surveyId= Integer.parseInt(request.queryParams("surveyId"));
-            int questionId = surveyDao.getLastAnsweredQuestionId(request.session().id(), surveyId) + 1;
+
+            Survey  survey = surveyDao.getSurveyById(surveyId);
+            String ipAddress = request.ip();
+
+            int executionId = surveyDao.getLatestExecutionId(sessionId,surveyId,ipAddress);
+
+            int questionId = surveyDao.getLastAnsweredQuestionId(survey.isSessionId(), sessionId, survey.isIpAddress(), ipAddress, surveyId, executionId) + 1;
             int elementType = Integer.parseInt(request.queryParams("elementType"));
             int elementId = Integer.parseInt(request.queryParams("elementId"));
             System.out.println("ELEMENTID ==========" + elementId);
             System.out.println("ELEMENTTYPE ==========" + elementType);
-
-            String ipAddress = request.ip();
-
 
             int resultId = 0;
                 switch (elementType){
@@ -1017,10 +1063,16 @@ public class SurveyController {
                             answer6 = Boolean.parseBoolean(request.queryParams("answer6"));
 
                         }
+                        String optionalTextfield;
+                        if (Strings.isNullOrEmpty(request.queryParams("optionalTextfield"))){
+                            optionalTextfield = null;
+                        }else{
+                            optionalTextfield = request.queryParams("optionalTextfield");
+                        }
 
                         surveyDao.saveExecutionClosedQuestion(new ClosedQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
                                 answer1, answer2, answer3, answer4, answer5, answer6,
-                                request.queryParams("optionalTextfield")));
+                                optionalTextfield));
                         break;
                     case 4:
                         surveyDao.saveExecutionOpenQuestion(new OpenQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId, request.queryParams("textfield")));

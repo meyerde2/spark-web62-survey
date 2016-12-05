@@ -5,6 +5,8 @@ import app.survey.executionElements.*;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
 
+import java.sql.Date;
+import java.util.Calendar;
 import java.util.List;
 
 /**
@@ -815,19 +817,45 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
-    public int getLastAnsweredQuestionId(String session, int surveyId) {
+    public int getLastAnsweredQuestionId(boolean isSessionId, String session, boolean isIpAddress, String ipAddress, int surveyId, int executionId) {
         int lastAnsweredQuestionId;
 
-        String sql = "SELECT questionId FROM execution_survey " +
-                " WHERE sessionId ='" + session + "' AND " +
-                " surveyId = " + surveyId + " " +
-                " ORDER BY questionId DESC LIMIT 1 ;";
+        String sql;
+
+        System.out.println("getLastAnsweredQuestionId---");
+        if (isSessionId || isIpAddress) {
+
+            if (isIpAddress){
+                sql = "SELECT questionId FROM execution_survey " +
+                        " WHERE surveyId = " + surveyId + " AND " +
+                        " ipAddress ='" + ipAddress+ "' " +
+                        " ORDER BY questionId DESC LIMIT 1 ;";
+                System.out.println("isIpAddress:..   " + sql);
+            }else{
+                sql = "SELECT questionId FROM execution_survey  " +
+                        " WHERE sessionId ='" + session + "' AND " +
+                        " surveyId = " + surveyId + " " +
+                        " ORDER BY questionId DESC LIMIT 1 ;";
+                System.out.println("isIpAddress ELSE::: " + sql);
+            }
+
+        }else {
+            if(executionId == 0){
+              return 0;
+            }else{
+                sql = "SELECT questionId FROM execution_survey " +
+                        " WHERE sessionId ='" + session + "' AND " +
+                        " surveyId = " + surveyId + " AND " +
+                        " surveyExecutionId = " + 0 + " " +
+                        " ORDER BY questionId DESC LIMIT 1 ;";
+                System.out.println("else:  " + sql);
+            }
+
+        }
 
         try (Connection con = sql2o.open()) {
 
             lastAnsweredQuestionId = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
-
-
 
         }catch (Exception e){
             System.out.println(e.toString());
@@ -838,10 +866,94 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
-    public boolean saveExecutionText(TextExecution textExecution) {
+    public int getLatestExecutionId(String session, int surveyId, String ipAddress) {
+
+        int executionId;
+
+        System.out.println("getLatestExecutionId------");
+        String sql = "SELECT surveyExecutionId FROM execution_multipleexecutions " +
+                " WHERE sessionId ='" + session + "' AND " +
+                " surveyId = " + surveyId + " AND " +
+                " end = " + 0 + " AND " +
+                " ipAddress ='" + ipAddress + "' AND" +
+                " date ='" + getCurrentDate() + "' " +
+                " ORDER BY surveyExecutionId DESC LIMIT 1 ;";
+
+        System.out.println("getLatestExecutionId - sql: " +sql);
+
+        try (Connection con = sql2o.open()) {
+
+            executionId = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
+
+        }catch (Exception e){
+            System.out.println(e.toString());
+            executionId = 0;
+        }
+        return executionId;
+    }
+
+    @Override
+    public boolean insertExecutionEnd(String session, int surveyId, String ipAddress) {
         String sql =
-                "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
-                        "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+                "INSERT INTO execution_multipleexecutions(surveyId, sessionId, ipAddress, end, date) " +
+                        "VALUES (:surveyId, :sessionId, :ipAddress, :end, :date)";
+
+        try (Connection con = sql2o.open()) {
+            con.setRollbackOnException(false);
+            con.createQuery(sql)
+                    .addParameter("surveyId", surveyId)
+                    .addParameter("sessionId", session)
+                    .addParameter("ipAddress", ipAddress)
+                    .addParameter("end", 0)
+                    .addParameter("date", getCurrentDate())
+                    .executeUpdate();
+            return true;
+        }catch (Exception e){
+            System.out.println(e.toString());
+            return false;
+        }
+
+    }
+
+    @Override
+    public boolean updateExecutionEnd(String session, int surveyId, String ipAddress, int executionId) {
+        String updateSql = "UPDATE execution_multipleexecutions SET " +
+                "end = :end " +
+                "WHERE surveyExecutionId = " + executionId +" ;";
+
+
+        String updateSqlSurveyElements = "UPDATE execution_survey SET " +
+                "surveyExecutionId = :surveyExecutionId " +
+                " WHERE sessionId ='" + session + "' AND " +
+                " surveyId = " + surveyId + " AND " +
+                " surveyExecutionId = " + 0 + " AND " +
+                " ipAddress ='" + ipAddress + "' ;";
+
+
+        try (Connection con = sql2o.open()) {
+            con.createQuery(updateSql)
+                    .addParameter("end", 1)
+                    .executeUpdate();
+
+            System.out.println("updateSqlSurveyElements ==========:  " +updateSqlSurveyElements);
+
+            con.createQuery(updateSqlSurveyElements)
+                    .addParameter("surveyExecutionId", executionId)
+                    .executeUpdate();
+            return true;
+
+        }catch (Exception e){
+            return false;
+        }
+    }
+
+    @Override
+    public boolean saveExecutionText(TextExecution textExecution) {
+
+        System.out.println("Texti speicher,,,,,,,,,,,,,,,,,,");
+        String sql =
+                "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId, surveyExecutionId, date) " +
+                        "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId, :surveyExecutionId, :date)";
 
         try (Connection con = sql2o.open()) {
             con.setRollbackOnException(false);
@@ -852,10 +964,13 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("sessionId", textExecution.getSessionId())
                     .addParameter("ipAddress", textExecution.getIpAddres())
                     .addParameter("questionId", textExecution.getQuestionId())
+                    .addParameter("surveyExecutionId", 0)
+                    .addParameter("date", getCurrentDate())
                     .executeUpdate();
             return true;
         }
         catch (Exception e){
+            System.out.println("texti wrongiiiiiiiiiii");
             System.out.println(e.toString());
             return false;
         }
@@ -868,8 +983,8 @@ public class SurveyDaoImpl implements SurveyDao {
             con.setRollbackOnException(false);
 
             String sql =
-                "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
-                        "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+                "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId, surveyExecutionId, date) " +
+                        "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId, :surveyExecutionId, :date)";
 
             con.createQuery(sql)
                     .addParameter("surveyId", personalDataExecution.getSurveyId())
@@ -878,6 +993,9 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("sessionId", personalDataExecution.getSessionId())
                     .addParameter("ipAddress", personalDataExecution.getIpAddres())
                     .addParameter("questionId", personalDataExecution.getQuestionId())
+                    .addParameter("surveyExecutionId", 0)
+                    .addParameter("date", getCurrentDate())
+
                     .executeUpdate();
 
             String sqlPersonalData =
@@ -909,8 +1027,8 @@ public class SurveyDaoImpl implements SurveyDao {
             con.setRollbackOnException(false);
 
             String sql =
-                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
-                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId, surveyExecutionId, date) " +
+                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId, :surveyExecutionId, :date)";
             con.createQuery(sql)
                     .addParameter("surveyId", closedQuestionExecution.getSurveyId())
                     .addParameter("elementId", closedQuestionExecution.getElementId())
@@ -918,6 +1036,9 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("sessionId", closedQuestionExecution.getSessionId())
                     .addParameter("ipAddress", closedQuestionExecution.getIpAddres())
                     .addParameter("questionId", closedQuestionExecution.getQuestionId())
+                    .addParameter("surveyExecutionId", 0)
+                    .addParameter("date", getCurrentDate())
+
                     .executeUpdate();
 
 
@@ -951,8 +1072,8 @@ public class SurveyDaoImpl implements SurveyDao {
         try (Connection con = sql2o.open()) {
             con.setRollbackOnException(false);
             String sql =
-                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
-                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId, surveyExecutionId, date) " +
+                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId, :surveyExecutionId, :date)";
 
             con.createQuery(sql)
                     .addParameter("surveyId", openQuestionExecution.getSurveyId())
@@ -961,6 +1082,9 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("sessionId", openQuestionExecution.getSessionId())
                     .addParameter("ipAddress", openQuestionExecution.getIpAddres())
                     .addParameter("questionId", openQuestionExecution.getQuestionId())
+                    .addParameter("surveyExecutionId", 0)
+                    .addParameter("date", getCurrentDate())
+
                     .executeUpdate();
 
             String sqlOpenQuestion =
@@ -988,8 +1112,8 @@ public class SurveyDaoImpl implements SurveyDao {
             con.setRollbackOnException(false);
 
             String sql =
-                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId) " +
-                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId)";
+                    "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId, surveyExecutionId, date) " +
+                            "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId, :surveyExecutionId, :date)";
             con.createQuery(sql)
                     .addParameter("surveyId", scoreTableExecution.getSurveyId())
                     .addParameter("elementId", scoreTableExecution.getElementId())
@@ -997,6 +1121,8 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("sessionId", scoreTableExecution.getSessionId())
                     .addParameter("ipAddress", scoreTableExecution.getIpAddres())
                     .addParameter("questionId", scoreTableExecution.getQuestionId())
+                    .addParameter("surveyExecutionId", 0)
+                    .addParameter("date", getCurrentDate())
                     .executeUpdate();
 
             String sqlScoreTable =
@@ -1019,6 +1145,12 @@ public class SurveyDaoImpl implements SurveyDao {
             System.out.println(e.toString());
             return false;
         }
+    }
+
+
+    public Date getCurrentDate(){
+        Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+        return date;
     }
 
 

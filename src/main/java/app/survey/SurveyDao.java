@@ -42,7 +42,10 @@ public interface SurveyDao {
     ScoreTable getScoreTable(int elementId);
 
 
-    int getLastAnsweredQuestionId(String session, int surveyId);
+    int getLastAnsweredQuestionId(boolean isSessionId, String session, boolean isIpAddress, String ipAddress, int surveyId, int executionId);
+    int getLatestExecutionId(String session, int surveyId, String ipAddress);
+    boolean insertExecutionEnd(String session, int surveyId, String ipAddress);
+    boolean updateExecutionEnd(String session, int surveyId, String ipAddress, int executionId);
 
     boolean saveExecutionText(TextExecution textExecution);
     boolean saveExecutionPersonalData(PersonalDataExecution personalDataExecution);

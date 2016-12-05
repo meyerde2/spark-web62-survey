@@ -31,7 +31,7 @@
  <h2>${msg.get("INDEX_HEADING_PROJECTINFO")}</h2>
  <div>
     <p>
-        Der Quelltext der Webapplikation ist unter <a href="https://github.com/meyerde2/spark-elearning-goodit" target="onBlank_">Github</a> veröffentlicht.
+        Der Quelltext der Webapplikation ist unter <a href="https://github.com/meyerde2/spark-web62-survey" target="onBlank_">Github</a> veröffentlicht.
     </p>
 
  </div>

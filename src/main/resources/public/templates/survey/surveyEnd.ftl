@@ -9,7 +9,15 @@
 
 			<div class="panel-body">
 
-               END!!!!!!!!
+                 <#if draft?? && draft?c =="true">
+                    <span class="label label-warning">Umfrage nicht freigeschaltet</span>
+                 <#else>
+                      <#if multipleSurveyExecution?? && multipleSurveyExecution?c =="true">
+                        <a href="/survey/execution/${currentSurvey.getSurveyId()}/" class="btn btn-primary">Erneut an der Umfrage teilnehmen?</a>
+                      <#else>
+                         <span class="label label-warning">keine Durchführung mehr möglich</span>
+                      </#if>
+                 </#if>
 			</div>
 
         </div>

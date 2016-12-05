@@ -9,7 +9,7 @@
 
 			<div class="panel-body">
 
-                <h2>Umfragenbezeichnung: ${currentSurvey.getSurveyTitle()}</h2>
+                <h2 style="word-break: break-all">Umfragenbezeichnung: ${currentSurvey.getSurveyTitle()}</h2>
 
 
                 <form id="surveyExecution" name="surveyExecution" method="post" action="/survey/executionQuestion/">
@@ -248,81 +248,81 @@
 
 
 							<div class="criterions">
-								<table>
+								<table class="table">
 								<tr>
-									<th>Kriterium:</th>
-									<th>gar nicht zufrieden</th>
-									<th>unzufrieden</th>
-									<th>eher unzufrieden</th>
-									<th>eher zufrieden</th>
-									<th>sehr zufrieden</th>
-									<th>nicht beurteilt</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs">Kriterium:</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs">gar nicht zufrieden</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs">unzufrieden</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs">eher unzufrieden</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs">eher zufrieden</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs">sehr zufrieden</th>
+									<th data-type="html" data-sort-use="text" data-breakpoints="xs" class="noEvaluation">nicht beurteilt</th>
 								</tr>
 								
 									<#if currentSurveyScoreTable.getCriterion1()?has_content>							
-										<tr>
+										<tr data-expanded="true">
 											<td><label for="criterion1">${currentSurveyScoreTable.getCriterion1()}</label></td>
 											<td><input type="radio" id="criterion1" name="criterion1" value="5" ></td>
 											<td><input type="radio" id="criterion1" name="criterion1" value="4" ></td>
 											<td><input type="radio" id="criterion1" name="criterion1" value="3" ></td>
 											<td><input type="radio" id="criterion1" name="criterion1" value="2" ></td>
 											<td><input type="radio" id="criterion1" name="criterion1" value="1" ></td>
-											<td><input type="radio" id="criterion1" name="criterion1" value="0" required></td>
+											<td class="noEvaluation"><input type="radio" id="criterion1" name="criterion1" value="0" required></td>
 										</tr>
 									</#if>	
 									<#if currentSurveyScoreTable.getCriterion2()?has_content>
-										<tr>
+										<tr data-expanded="true">
 											<td><label for="criterion2">${currentSurveyScoreTable.getCriterion2()}</label></td>
 											<td><input type="radio" id="criterion2" name="criterion2" value="5" ></td>
 											<td><input type="radio" id="criterion2" name="criterion2" value="4" ></td>
 											<td><input type="radio" id="criterion2" name="criterion2" value="3" ></td>
 											<td><input type="radio" id="criterion2" name="criterion2" value="2" ></td>
 											<td><input type="radio" id="criterion2" name="criterion2" value="1" ></td>
-											<td><input type="radio" id="criterion2" name="criterion2" value="0" required></td>
+											<td class="noEvaluation"><input type="radio" id="criterion2" name="criterion2" value="0" required></td>
 										</tr>
 									</#if>		
 									<#if currentSurveyScoreTable.getCriterion3()?has_content>
-										<tr>
+										<tr data-expanded="true">
 											<td><label for="criterion3">${currentSurveyScoreTable.getCriterion3()}</label></td>
 											<td><input type="radio" id="criterion3" name="criterion3" value="5" ></td>
 											<td><input type="radio" id="criterion3" name="criterion3" value="4" ></td>
 											<td><input type="radio" id="criterion3" name="criterion3" value="3" ></td>
 											<td><input type="radio" id="criterion3" name="criterion3" value="2" ></td>
 											<td><input type="radio" id="criterion3" name="criterion3" value="1" ></td>
-											<td><input type="radio" id="criterion3" name="criterion3" value="0" required></td>
+											<td class="noEvaluation"><input type="radio" id="criterion3" name="criterion3" value="0" required></td>
 										</tr>
 									</#if>	
 									<#if currentSurveyScoreTable.getCriterion4()?has_content>
-										<tr>
+										<tr data-expanded="true">
 											<td><label for="criterion4">${currentSurveyScoreTable.getCriterion4()}</label></td>
 											<td><input type="radio" id="criterion4" name="criterion4" value="5" ></td>
 											<td><input type="radio" id="criterion4" name="criterion4" value="4" ></td>
 											<td><input type="radio" id="criterion4" name="criterion4" value="3" ></td>
 											<td><input type="radio" id="criterion4" name="criterion4" value="2" ></td>
 											<td><input type="radio" id="criterion4" name="criterion4" value="1" ></td>
-											<td><input type="radio" id="criterion4" name="criterion4" value="0" required></td>
+											<td class="noEvaluation"><input type="radio" id="criterion4" name="criterion4" value="0" required></td>
 										</tr>
 									</#if>	
 									<#if currentSurveyScoreTable.getCriterion5()?has_content>
-										<tr>
+										<tr data-expanded="true">
 											<td><label for="criterion5">${currentSurveyScoreTable.getCriterion5()}</label></td>
 											<td><input type="radio" id="criterion5" name="criterion5" value="5" ></td>
 											<td><input type="radio" id="criterion5" name="criterion5" value="4" ></td>
 											<td><input type="radio" id="criterion5" name="criterion5" value="3" ></td>
 											<td><input type="radio" id="criterion5" name="criterion5" value="2" ></td>
 											<td><input type="radio" id="criterion5" name="criterion5" value="1" ></td>
-											<td><input type="radio" id="criterion5" name="criterion5" value="0" required></td>
+											<td class="noEvaluation"><input type="radio" id="criterion5" name="criterion5" value="0" required></td>
 										</tr>
 									</#if>	
 									<#if currentSurveyScoreTable.getCriterion6()?has_content>
-										<tr>
+										<tr data-expanded="true">
 											<td><label for="criterion6">${currentSurveyScoreTable.getCriterion6()}</label></td>
 											<td><input type="radio" id="criterion6" name="criterion6" value="5" ></td>
 											<td><input type="radio" id="criterion6" name="criterion6" value="4" ></td>
 											<td><input type="radio" id="criterion6" name="criterion6" value="3" ></td>
 											<td><input type="radio" id="criterion6" name="criterion6" value="2" ></td>
 											<td><input type="radio" id="criterion6" name="criterion6" value="1" ></td>
-											<td><input type="radio" id="criterion6" name="criterion6" value="0" required></td>
+											<td class="noEvaluation"><input type="radio" id="criterion6" name="criterion6" value="0" required></td>
 										</tr>
 									</#if>	
 								</table>		
@@ -340,5 +340,12 @@
         </div>
     </div>
 
+		
+	<script>
+	
+	jQuery(function($){
+		$('.table').footable();
+	});
+	</script>
 
 </@layout.masterTemplate>

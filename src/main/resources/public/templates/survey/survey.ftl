@@ -14,7 +14,9 @@
 					 
 					<div class="col-md-4">
 						<label for="link">${msg.get("SURVEY_LINK")}</label>
-						<a href="http://localhost:4567/survey/execution/${currentSurvey.getSurveyId()}/" id="link" name="link" target="_blank">http://localhost:4567/survey/execution/${currentSurvey.getSurveyId()}/</a>
+						<div>
+						<a href="/survey/execution/${currentSurvey.getSurveyId()}/" id="link" name="link" style="word-break: break-all"  target="_blank"><span id="domain"></span>/survey/execution/${currentSurvey.getSurveyId()}/</a>
+					    </div>
 					</div>
 		
 				
@@ -29,17 +31,18 @@
 
 					
 					</div>			
-					
-					<div class="col-md-2">
+					<div class="col-md-5">
+                        <div >
 
-						<input type="checkbox" name="ipAddress" id="ipAddress" class=""  value="true"  <#if currentSurvey.isIpAddress()?c =="true">checked</#if>/>
-						<label for="ipAddress">${msg.get("SURVEY_IPADDRESS")}</label>
-					</div>
-					<div class="col-md-2">
-						<input type="checkbox" name="sessionId" id="sessionId" class=""  value="true"  <#if currentSurvey.isSessionId()?c =="true">checked</#if>/>
-						<label for="sessionId">${msg.get("SURVEY_SESSIONID")}</label>
-					
-					</div>
+                            <input type="checkbox" name="ipAddress" id="ipAddress" class=""  value="true"  <#if currentSurvey.isIpAddress()?c =="true">checked</#if>/>
+                            <label for="ipAddress">${msg.get("SURVEY_IPADDRESS")}</label>
+                        </div>
+                        <div >
+                            <input type="checkbox" name="sessionId" id="sessionId" class=""  value="true"  <#if currentSurvey.isSessionId()?c =="true">checked</#if>/>
+                            <label for="sessionId">${msg.get("SURVEY_SESSIONID")}</label>
+
+                        </div>
+                    </div>
 				</div>
 				
 				</br>
@@ -55,7 +58,7 @@
 					<div class="input-group">
 						<input type="text" name="surveyTitle" id="surveyTitle" class="form-control"  placeholder="${msg.get('SURVEY_TITLE')}" value="${currentSurvey.getSurveyTitle()}" />
 						<span class="input-group-btn">
-							<button class="btn btn-primary" type="submit">Speichern</button>
+							<button class="btn btn-primary" type="submit">speichern</button>
 						</span>
 					</div>				
 				</div>
@@ -93,15 +96,15 @@
 		<div class="panel panel-default">
 			<div class="panel-body">
 		  
-				<div class="table-responsive">
+				<div class="">
 				  <table class="table table-striped">
 					<thead>
 					  <tr>
 						<th>ID</th>
 						<th>Titel</th>
-						<th>Element</th>
-						<th>bearbeiten?</th>
-						<th>löschen?</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">Element</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">bearbeiten</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">löschen</th>
 					  </tr>
 					</thead>
 					<tbody>
@@ -109,7 +112,7 @@
 						<#list surveyElements>
 
 							<#items as element>
-							  <tr>
+							  <tr data-expanded="true">
 								<td>${element.getElementId()}</td>
 								<td>
 								<#if element.getElementTitle()??>
@@ -159,8 +162,8 @@
 											<div class="modal-footer">
 											<div class="form-group">
 
-											  <a href="/delete/survey/${element.getSurveyId()}/element/${element.getElementId()}/" class="btn btn-primary">Löschen</a>
-											  <button type="button" class="btn btn-default" data-dismiss="modal">Abbrechen</button>
+											  <a href="/delete/survey/${element.getSurveyId()}/element/${element.getElementId()}/" class="btn btn-primary">${msg.get("COMMON_DELETE")}</a>
+											  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 											</div>
 											</div>
@@ -226,7 +229,7 @@
                   <div class="modal-footer">
                       <div class="form-group">
                           <input type="button" class="btn btn-primary" id="saveTextElement" name="saveTextElement" value="${msg.get("SURVEY_ADD")}">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
                       </div>
                   </div>
               </form>
@@ -277,8 +280,8 @@
 
                   <div class="modal-footer">
                       <div class="form-group">
-                          <input type="button" class="btn btn-primary" id="saveTextElementUpdate" name="saveTextElementUpdate" value="${msg.get("SURVEY_ADD")}">
-                          <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                          <input type="button" class="btn btn-primary" id="saveTextElementUpdate" name="saveTextElementUpdate" value="${msg.get("COMMON_UPDATE")}">
+                          <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
                       </div>
                   </div>
               </form>
@@ -334,7 +337,7 @@
 					  <div class="form-group">
 
 						  <input type="button" class="btn btn-primary" id="savePersonalDataElement" name="savePersonalDataElement" value="${msg.get("SURVEY_ADD")}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 					  </div>
 				  </div>
@@ -393,8 +396,8 @@
 					<div class="modal-footer">
 					  <div class="form-group">
 
-						  <input type="button" class="btn btn-primary" id="savePersonalDataElementUpdate" name="savePersonalDataElementUpdate" value="${msg.get("SURVEY_ADD")}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <input type="button" class="btn btn-primary" id="savePersonalDataElementUpdate" name="savePersonalDataElementUpdate" value="${msg.get("COMMON_UPDATE")}">
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 					  </div>
 				  </div>
@@ -482,7 +485,7 @@
 					<div class="modal-footer">
 					  <div class="form-group">
 						  <input type="button" class="btn btn-primary" id="closedQuestionElementbuttonSave" name="closedQuestionElementbuttonSave" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 					  </div>
 				  </div>
 			  </form>
@@ -572,8 +575,8 @@
 					
 					<div class="modal-footer">
 					  <div class="form-group">
-						  <input type="button" class="btn btn-primary" id="closedQuestionElementbuttonUpdate" name="closedQuestionElementbuttonUpdate" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <input type="button" class="btn btn-primary" id="closedQuestionElementbuttonUpdate" name="closedQuestionElementbuttonUpdate" value="${msg.get('COMMON_UPDATE')}">
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 					  </div>
 				  </div>
 			  </form>
@@ -683,8 +686,8 @@
 					
 					<div class="modal-footer">
 					  <div class="form-group">
-						  <input type="button" class="btn btn-primary" id="openQuestionElementFormSaveUpdate" name="openQuestionElementFormSaveUpdate" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <input type="button" class="btn btn-primary" id="openQuestionElementFormSaveUpdate" name="openQuestionElementFormSaveUpdate" value="${msg.get('COMMON_UPDATE')}">
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 					  </div>
 				    </div>
 			  </form>
@@ -769,7 +772,7 @@
 					<div class="modal-footer">			  					
 					  <div class="form-group">
 						  <input type="button" class="btn btn-primary" id="scoreTableElementFormSave" name="scoreTableElementFormSave" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 					  </div>
 				  </div>
 			  </form>
@@ -858,8 +861,8 @@
 					
 					<div class="modal-footer">			  					
 					  <div class="form-group">
-						  <input type="button" class="btn btn-primary" id="scoreTableElementFormSaveUpdate" name="scoreTableElementFormSaveUpdate" value="${msg.get('SURVEY_ADD')}">
-						  <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+						  <input type="button" class="btn btn-primary" id="scoreTableElementFormSaveUpdate" name="scoreTableElementFormSaveUpdate" value="${msg.get('COMMON_UPDATE')}">
+						  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 					  </div>
 				  </div>
 			  </form>
@@ -873,10 +876,14 @@
 
 	<script>
     $(document).ready(function(){
+	
+	var port = location.port || (location.protocol === 'https:' ? '443' : '80');
+
+	$("#domain").html(window.location.origin);
+	
         $("#saveTextElement").click(function(){
 
 			var vcfData = new FormData($('#textElementForm')[0]); 
-			alert(vcfData);
             var request = $.ajax({
               url: "/textupload/",
               type: "POST",
@@ -904,7 +911,6 @@
 		$("#saveTextElementUpdate").click(function(){
 
 			var vcfDataUpdate = new FormData($('#textElementFormUpdate')[0]); 
-			alert(vcfDataUpdate);
             var request = $.ajax({
               url: "/textuploadUpdate/",
               type: "POST",
@@ -960,9 +966,8 @@
 		$("#savePersonalDataElementUpdate").click(function(){
 
 
-				var vcfPersonalDataUpdate = new FormData($('#personalDataElementFormUpdate')[0]); 
-				alert(vcfPersonalDataUpdate);
-				var request = $.ajax({
+			var vcfPersonalDataUpdate = new FormData($('#personalDataElementFormUpdate')[0]); 
+			var request = $.ajax({
               url: "/personaldataUpdate/",
               type: "POST",
               data: vcfPersonalDataUpdate,
@@ -1153,7 +1158,6 @@
 			
 			request.done(function(jsonResult) {
 			
-				alert(jsonResult);
 				var obj = jQuery.parseJSON(jsonResult);
 				
 				var str = addressValue.replace(/[^a-zA-Z 0-9]+/g,'');
@@ -1245,5 +1249,10 @@
 
 		
     });
+	
+	
+	jQuery(function($){
+		$('.table').footable();
+	});
     </script>
 </@layout.masterTemplate>
