@@ -1,6 +1,9 @@
 package app.evaluation;
 
 
+import app.evaluation.elements.helper.ClosedAnswerCounter;
+import app.evaluation.elements.helper.LocationCount;
+import app.evaluation.elements.helper.ScoreTableAnswerCounter;
 import app.survey.SurveyElement;
 import org.sql2o.Connection;
 import org.sql2o.Sql2o;
@@ -13,11 +16,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
 
     public EvaluationDaoImpl(Sql2o sql2o) {
         this.sql2o = sql2o;
-    }
-
-    @Override
-    public Evaluation getSurveyEvaluationById(int surveyId) {
-        return null;
     }
 
     @Override
@@ -56,109 +54,113 @@ public class EvaluationDaoImpl implements EvaluationDao {
     }
 
     @Override
-    public int getCountAnswer1ClosedQuestion(int surveyId) {
-        int count;
+    public ClosedAnswerCounter getCountOfClosedQuestionAnswers(int surveyId, int elementId) {
+        List<ClosedAnswerCounter> closedAnswerCounters=  null;
 
-        String sql = "SELECT COUNT(answer1) FROM `execution_closedquestion` WHERE answer1 = 1 AND surveyId= " + surveyId + " ;";
+        String sql = "SELECT " +
+                "SUM(CASE WHEN execution_closedquestion.answer1 = 1 THEN 1 ELSE 0 END) AS answer1c, " +
+                "SUM(CASE WHEN execution_closedquestion.answer2 = 1 THEN 1 ELSE 0 END) AS answer2c, " +
+                "SUM(CASE WHEN execution_closedquestion.answer3 = 1 THEN 1 ELSE 0 END) AS answer3c, " +
+                "SUM(CASE WHEN execution_closedquestion.answer4 = 1 THEN 1 ELSE 0 END) AS answer4c, " +
+                "SUM(CASE WHEN execution_closedquestion.answer5 = 1 THEN 1 ELSE 0 END) AS answer5c, " +
+                "SUM(CASE WHEN execution_closedquestion.answer6 = 1 THEN 1 ELSE 0 END) AS answer6c, " +
+                "closedquestion.answer1, " +
+                "closedquestion.answer2, " +
+                "closedquestion.answer3, " +
+                "closedquestion.answer4, " +
+                "closedquestion.answer5, " +
+                "closedquestion.answer6 " +
+                "FROM execution_closedquestion LEFT JOIN closedquestion ON execution_closedquestion.elementId = closedquestion.elementId " +
+                "WHERE execution_closedquestion.surveyId = " + surveyId + " AND execution_closedquestion.elementId= " + elementId +" ;";
 
+        System.out.println(sql.toString());
         try (Connection con = sql2o.open()) {
 
-            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
+            closedAnswerCounters = con.createQuery(sql).executeAndFetch(ClosedAnswerCounter.class);
 
         }catch (Exception e){
             System.out.println(e.toString());
-            count = 0;
         }
-        return count;
+
+        System.out.println("obj  closedAnswerCounters" + closedAnswerCounters);
+        return closedAnswerCounters.get(0);
     }
 
     @Override
-    public int getCountAnswer2ClosedQuestion(int surveyId) {
-        int count;
+    public ScoreTableAnswerCounter getCountOfScoreTableAnswers(int surveyId, int elementId) {
+        List<ScoreTableAnswerCounter> scoreTableAnswerCounterList =  null;
 
-        String sql = "SELECT COUNT(answer2) FROM `execution_closedquestion` WHERE answer2 = 1 AND surveyId= " + surveyId + " ;";
-
+        List<ScoreTableAnswerCounter> scoreTableAnswerCounters =  null;
         try (Connection con = sql2o.open()) {
 
-            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
+        String sql = "SELECT " +
+                "SUM(CASE WHEN execution_scoretable.answer1 = 1 THEN 1 ELSE 0 END) AS answer1c1, " +
+                "SUM(CASE WHEN execution_scoretable.answer1 = 2 THEN 1 ELSE 0 END) AS answer1c2, " +
+                "SUM(CASE WHEN execution_scoretable.answer1 = 3 THEN 1 ELSE 0 END) AS answer1c3, " +
+                "SUM(CASE WHEN execution_scoretable.answer1 = 4 THEN 1 ELSE 0 END) AS answer1c4, " +
+                "SUM(CASE WHEN execution_scoretable.answer1 = 5 THEN 1 ELSE 0 END) AS answer1c5, " +
+                "SUM(CASE WHEN execution_scoretable.answer1 = 0 THEN 1 ELSE 0 END) AS answer1c0, " +
+
+                "SUM(CASE WHEN execution_scoretable.answer2 = 1 THEN 1 ELSE 0 END) AS answer2c1, " +
+                "SUM(CASE WHEN execution_scoretable.answer2 = 2 THEN 1 ELSE 0 END) AS answer2c2, " +
+                "SUM(CASE WHEN execution_scoretable.answer2 = 3 THEN 1 ELSE 0 END) AS answer2c3, " +
+                "SUM(CASE WHEN execution_scoretable.answer2 = 4 THEN 1 ELSE 0 END) AS answer2c4, " +
+                "SUM(CASE WHEN execution_scoretable.answer2 = 5 THEN 1 ELSE 0 END) AS answer2c5, " +
+                "SUM(CASE WHEN execution_scoretable.answer2 = 0 THEN 1 ELSE 0 END) AS answer2c0, " +
+
+                "SUM(CASE WHEN execution_scoretable.answer3 = 1 THEN 1 ELSE 0 END) AS answer3c1, " +
+                "SUM(CASE WHEN execution_scoretable.answer3 = 2 THEN 1 ELSE 0 END) AS answer3c2, " +
+                "SUM(CASE WHEN execution_scoretable.answer3 = 3 THEN 1 ELSE 0 END) AS answer3c3, " +
+                "SUM(CASE WHEN execution_scoretable.answer3 = 4 THEN 1 ELSE 0 END) AS answer3c4, " +
+                "SUM(CASE WHEN execution_scoretable.answer3 = 5 THEN 1 ELSE 0 END) AS answer3c5, " +
+                "SUM(CASE WHEN execution_scoretable.answer3 = 0 THEN 1 ELSE 0 END) AS answer3c0, " +
+
+                "SUM(CASE WHEN execution_scoretable.answer4 = 1 THEN 1 ELSE 0 END) AS answer4c1, " +
+                "SUM(CASE WHEN execution_scoretable.answer4 = 2 THEN 1 ELSE 0 END) AS answer4c2, " +
+                "SUM(CASE WHEN execution_scoretable.answer4 = 3 THEN 1 ELSE 0 END) AS answer4c3, " +
+                "SUM(CASE WHEN execution_scoretable.answer4 = 4 THEN 1 ELSE 0 END) AS answer4c4, " +
+                "SUM(CASE WHEN execution_scoretable.answer4 = 5 THEN 1 ELSE 0 END) AS answer4c5, " +
+                "SUM(CASE WHEN execution_scoretable.answer4 = 0 THEN 1 ELSE 0 END) AS answer4c0, " +
+
+                "SUM(CASE WHEN execution_scoretable.answer5 = 1 THEN 1 ELSE 0 END) AS answer5c1, " +
+                "SUM(CASE WHEN execution_scoretable.answer5 = 2 THEN 1 ELSE 0 END) AS answer5c2, " +
+                "SUM(CASE WHEN execution_scoretable.answer5 = 3 THEN 1 ELSE 0 END) AS answer5c3, " +
+                "SUM(CASE WHEN execution_scoretable.answer5 = 4 THEN 1 ELSE 0 END) AS answer5c4, " +
+                "SUM(CASE WHEN execution_scoretable.answer5 = 5 THEN 1 ELSE 0 END) AS answer5c5, " +
+                "SUM(CASE WHEN execution_scoretable.answer5 = 0 THEN 1 ELSE 0 END) AS answer5c0, " +
+
+                "SUM(CASE WHEN execution_scoretable.answer6 = 1 THEN 1 ELSE 0 END) AS answer6c1, " +
+                "SUM(CASE WHEN execution_scoretable.answer6 = 2 THEN 1 ELSE 0 END) AS answer6c2, " +
+                "SUM(CASE WHEN execution_scoretable.answer6 = 3 THEN 1 ELSE 0 END) AS answer6c3, " +
+                "SUM(CASE WHEN execution_scoretable.answer6 = 4 THEN 1 ELSE 0 END) AS answer6c4, " +
+                "SUM(CASE WHEN execution_scoretable.answer6 = 5 THEN 1 ELSE 0 END) AS answer6c5, " +
+                "SUM(CASE WHEN execution_scoretable.answer6 = 0 THEN 1 ELSE 0 END) AS answer6c0, " +
+
+                "scoretable.criterion1, " +
+                "scoretable.criterion2, " +
+                "scoretable.criterion3, " +
+                "scoretable.criterion4, " +
+                "scoretable.criterion5, " +
+                "scoretable.criterion6 " +
+                "FROM execution_scoretable LEFT JOIN scoretable ON execution_scoretable.elementId = scoretable.elementId " +
+                "WHERE execution_scoretable.surveyId = " + surveyId + " AND execution_scoretable.elementId= " + elementId +" ;";
+
+            System.out.println(sql);
+
+            scoreTableAnswerCounters = con.createQuery(sql).executeAndFetch(ScoreTableAnswerCounter.class);
+
+            scoreTableAnswerCounterList.add(scoreTableAnswerCounters.get(0));
+
 
         }catch (Exception e){
             System.out.println(e.toString());
-            count = 0;
         }
-        return count;
+        return scoreTableAnswerCounters.get(0);
     }
 
-    @Override
-    public int getCountAnswer3ClosedQuestion(int surveyId) {
-        int count;
-
-        String sql = "SELECT COUNT(answer3) FROM `execution_closedquestion` WHERE answer3 = 1 AND surveyId= " + surveyId + " ;";
-
-        try (Connection con = sql2o.open()) {
-
-            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
-
-        }catch (Exception e){
-            System.out.println(e.toString());
-            count = 0;
-        }
-        return count;
-    }
 
     @Override
-    public int getCountAnswer4ClosedQuestion(int surveyId) {
-        int count;
-
-        String sql = "SELECT COUNT(answer4) FROM `execution_closedquestion` WHERE answer4 = 1 AND surveyId= " + surveyId + " ;";
-
-        try (Connection con = sql2o.open()) {
-
-            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
-
-        }catch (Exception e){
-            System.out.println(e.toString());
-            count = 0;
-        }
-        return count;
-    }
-
-    @Override
-    public int getCountAnswer5ClosedQuestion(int surveyId) {
-        int count;
-
-        String sql = "SELECT COUNT(answer5) FROM `execution_closedquestion` WHERE answer5 = 1 AND surveyId= " + surveyId + " ;";
-
-        try (Connection con = sql2o.open()) {
-
-            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
-
-        }catch (Exception e){
-            System.out.println(e.toString());
-            count = 0;
-        }
-        return count;
-    }
-
-    @Override
-    public int getCountAnswer6ClosedQuestion(int surveyId) {
-        int count;
-
-        String sql = "SELECT COUNT(answer6) FROM `execution_closedquestion` WHERE answer6 = 1 AND surveyId= " + surveyId + " ;";
-
-        try (Connection con = sql2o.open()) {
-
-            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
-
-        }catch (Exception e){
-            System.out.println(e.toString());
-            count = 0;
-        }
-        return count;
-    }
-
-    @Override
-    public List<String> getOptionalTextfieldAnswersClosedQuestion(int surveyId) {
+    public List<String> getOptionalTextfieldAnswersClosedQuestion(int surveyId, int questionId) {
         List<String> optionalTestfieldList=  null;
 
         String sql = "SELECT optionalTextfield FROM `execution_closedquestion` WHERE surveyId= " + surveyId + " " +
@@ -171,7 +173,64 @@ public class EvaluationDaoImpl implements EvaluationDao {
         }catch (Exception e){
             System.out.println(e.toString());
         }
+
+        System.out.println("optionalTestfieldList:    " + optionalTestfieldList);
         return optionalTestfieldList;
+    }
+
+    @Override
+    public List<LocationCount> getCountOfDifferentLocations(int surveyId, int elementId) {
+
+        List<LocationCount> countOfDifferentLocations=  null;
+
+        String sql = "SELECT location, COUNT(*) AS `count` FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " GROUP BY location ;";
+
+        try (Connection con = sql2o.open()) {
+
+            countOfDifferentLocations = con.createQuery(sql).executeAndFetch(LocationCount.class);
+
+            System.out.println("count::  "+ countOfDifferentLocations);
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+        return countOfDifferentLocations;
+
+    }
+
+    @Override
+    public List<Integer> getAllAges(int surveyId, int elementId) {
+
+
+        List<Integer> allAges=  null;
+
+        String sql = "SELECT age FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ORDER BY age ASC;";
+
+        try (Connection con = sql2o.open()) {
+
+            allAges = con.createQuery(sql).executeScalarList(Integer.class);
+
+            System.out.println("count::  "+ allAges);
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+        return allAges;
+
+    }
+
+    @Override
+    public List<String> getOpenQuestionEvaluation(int surveyId, int elementId) {
+        List<String> openQuestionEvaluations = null;
+
+        String sql = "SELECT text FROM execution_openquestion WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ;";
+
+        try (Connection con = sql2o.open()) {
+
+            openQuestionEvaluations = con.createQuery(sql).executeScalarList(String.class);
+
+        } catch (Exception e) {
+            System.out.println(e.toString());
+        }
+        return openQuestionEvaluations;
     }
 
 }

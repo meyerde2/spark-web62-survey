@@ -25,5 +25,7 @@ public class ClosedQuestionExecution {
         @Getter @Setter boolean answer5;
         @Getter @Setter boolean answer6;
         @Getter @Setter String optionalTextfield;
+        @Getter @Setter int surveyCounterId;
+
 
 }

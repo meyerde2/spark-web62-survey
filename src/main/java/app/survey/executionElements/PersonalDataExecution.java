@@ -22,5 +22,7 @@ public class PersonalDataExecution {
     @Getter @Setter int age;
     @Getter @Setter int gender; //1 = m; 2 = w
     @Getter @Setter String location;
+    @Getter @Setter int surveyCounterId;
+
 
 }

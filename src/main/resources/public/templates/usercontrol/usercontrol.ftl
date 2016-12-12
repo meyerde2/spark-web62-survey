@@ -14,7 +14,7 @@
         <th data-type="html" data-sort-use="text" data-breakpoints="xs">Vorname</th>
         <th data-type="html" data-sort-use="text" data-breakpoints="xs">Name</th>
         <th data-type="html" data-sort-use="text" data-breakpoints="xs">Rolle</th>
-        <th data-type="html" data-sort-use="text" data-breakpoints="xs">bearbeiten?</th>
+        <th data-type="html" data-sort-use="text" data-breakpoints="xs">Aktion</th>
       </tr>
     </thead>
     <tbody>
@@ -31,7 +31,7 @@
 					<#if user.getRole() == 1> Admin</#if>
 					<#if user.getRole() == 2> Ersteller</#if>
 				</td>
-				<td><#if currentUser != user.getUsername()><a href="/user/${user.getUsername()}/"><span class="glyphicon glyphicon-pencil"></span></a></#if></td>
+				<td><#if currentUser != user.getUsername()><a href="/user/${user.getUsername()}/" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></a></#if></td>
 			  </tr>
 			</#items>
 		

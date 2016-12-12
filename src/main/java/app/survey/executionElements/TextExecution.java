@@ -16,6 +16,6 @@ public class TextExecution {
     @Getter @Setter String sessionId;
     @Getter @Setter String ipAddres;
     @Getter @Setter int questionId;
-
+    @Getter @Setter int surveyCounterId;
 
 }

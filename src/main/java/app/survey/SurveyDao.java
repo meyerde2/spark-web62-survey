@@ -44,8 +44,8 @@ public interface SurveyDao {
 
     int getLastAnsweredQuestionId(boolean isSessionId, String session, boolean isIpAddress, String ipAddress, int surveyId, int executionId);
     int getLatestExecutionId(String session, int surveyId, String ipAddress);
-    boolean insertExecutionEnd(String session, int surveyId, String ipAddress);
-    boolean updateExecutionEnd(String session, int surveyId, String ipAddress, int executionId);
+    int insertExecutionEnd(String session, int surveyId, String ipAddress);
+    boolean updateExecutionEnd(int executionId);
 
     boolean saveExecutionText(TextExecution textExecution);
     boolean saveExecutionPersonalData(PersonalDataExecution personalDataExecution);

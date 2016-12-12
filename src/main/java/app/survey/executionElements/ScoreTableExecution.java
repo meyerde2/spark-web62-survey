@@ -18,10 +18,12 @@ public class ScoreTableExecution {
     @Getter @Setter String ipAddres;
     @Getter @Setter int questionId;
 
-    @Getter @Setter int criterion1;
-    @Getter @Setter int criterion2;
-    @Getter @Setter int criterion3;
-    @Getter @Setter int criterion4;
-    @Getter @Setter int criterion5;
-    @Getter @Setter int criterion6;
+    @Getter @Setter Integer answer1;
+    @Getter @Setter Integer answer2;
+    @Getter @Setter Integer answer3;
+    @Getter @Setter Integer answer4;
+    @Getter @Setter Integer answer5;
+    @Getter @Setter Integer answer6;
+    @Getter @Setter Integer surveyCounterId;
+
 }

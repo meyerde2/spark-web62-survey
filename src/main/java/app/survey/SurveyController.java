@@ -866,8 +866,6 @@ public class SurveyController {
                 //new survey execution
                 System.out.println("new survey execution = lastQuestionId == " + lastQuestionId);
 
-                surveyDao.insertExecutionEnd(sessionId, surveyId, ipAddress);
-
                 elementType = allSurveyElements.get(0).getElementType();
                 switch (elementType){
                     case 1:
@@ -949,7 +947,7 @@ public class SurveyController {
                         attributes.put("multipleSurveyExecution", false);
                     }else{
                         System.out.println("UPDAT EXECUTION ID");
-                        surveyDao.updateExecutionEnd(sessionId, surveyId, ipAddress, executionId);
+                        surveyDao.updateExecutionEnd(executionId);
                         attributes.put("multipleSurveyExecution", true);
                     }
                 }
@@ -997,6 +995,17 @@ public class SurveyController {
             int executionId = surveyDao.getLatestExecutionId(sessionId,surveyId,ipAddress);
 
             int questionId = surveyDao.getLastAnsweredQuestionId(survey.isSessionId(), sessionId, survey.isIpAddress(), ipAddress, surveyId, executionId) + 1;
+            int surveyCounterId = 0;
+
+            if(questionId == 1){
+                surveyCounterId = surveyDao.insertExecutionEnd(sessionId, surveyId, ipAddress);
+            }else{
+                surveyCounterId = surveyDao.getLatestExecutionId(sessionId,surveyId,ipAddress);
+
+            }
+
+            System.out.println("SURVEY---------COUNTER-----ID:::     " + surveyCounterId);
+
             int elementType = Integer.parseInt(request.queryParams("elementType"));
             int elementId = Integer.parseInt(request.queryParams("elementId"));
             System.out.println("ELEMENTID ==========" + elementId);
@@ -1006,7 +1015,7 @@ public class SurveyController {
                 switch (elementType){
                     case 1:
                         //TextExecution
-                        surveyDao.saveExecutionText(new TextExecution(0, surveyId, elementId,elementType, sessionId, ipAddress, questionId));
+                        surveyDao.saveExecutionText(new TextExecution(0, surveyId, elementId,elementType, sessionId, ipAddress, questionId, surveyCounterId));
                         break;
                     case 2:
                         //PersonalDataExecution
@@ -1022,7 +1031,7 @@ public class SurveyController {
                                     request.queryParams("lastname"),
                                     Integer.parseInt(request.queryParams("age")),
                                     Integer.parseInt(request.queryParams("gender")),
-                                    request.queryParams("location")));
+                                    request.queryParams("location"), surveyCounterId));
                         }else{
                             resultId = -1;
                         }
@@ -1072,14 +1081,13 @@ public class SurveyController {
 
                         surveyDao.saveExecutionClosedQuestion(new ClosedQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
                                 answer1, answer2, answer3, answer4, answer5, answer6,
-                                optionalTextfield));
+                                optionalTextfield, surveyCounterId));
                         break;
                     case 4:
-                        surveyDao.saveExecutionOpenQuestion(new OpenQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId, request.queryParams("textfield")));
+                        surveyDao.saveExecutionOpenQuestion(new OpenQuestionExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId, request.queryParams("textfield"), surveyCounterId));
                         break;
                     case 5:
-                        int criterion1 = 0, criterion2 = 0, criterion3 = 0, criterion4 = 0, criterion5 =0, criterion6 = 0;
-
+                        Integer criterion1 = null, criterion2 = null, criterion3 = null, criterion4 = null, criterion5 = null, criterion6 = null;
 
                         if(!Strings.isNullOrEmpty(request.queryParams("criterion1")))
                                 criterion1 = Integer.parseInt(request.queryParams("criterion1"));
@@ -1101,7 +1109,7 @@ public class SurveyController {
 
 
                         surveyDao.saveExecutionScoreTable(new ScoreTableExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
-                                criterion1, criterion2, criterion3, criterion4, criterion5, criterion6));
+                                criterion1, criterion2, criterion3, criterion4, criterion5, criterion6, surveyCounterId));
                         break;
                 }
 

@@ -56,6 +56,13 @@
     background-color: #BDBDBD;
 }
 
+blockquote {
+    background: url(../../img/quote.png) no-repeat 0 10px;
+    font-style: italic;
+    border-left: none;
+    padding: 0 0 0 30px;
+}
+
 
 .progress{
     width: 100%

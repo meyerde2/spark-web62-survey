@@ -20,4 +20,6 @@ public class OpenQuestionExecution {
     @Getter @Setter int questionId;
 
     @Getter @Setter String text;
+    @Getter @Setter int surveyCounterId;
+
 }

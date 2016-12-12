@@ -16,10 +16,8 @@
 					  <tr>
 						<th>ID</th>
 						<th>Titel</th>
-						<th data-breakpoints="xs">Status</th>
-						<th data-type="html" data-sort-use="text" data-breakpoints="xs">bearbeiten</th>
-						<th data-type="html" data-sort-use="text" data-breakpoints="xs">auswerten</th>
-						<th data-type="html" data-sort-use="text" data-breakpoints="xs">löschen</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">Status</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">Aktionen</th>
 					  </tr>
 					</thead>
 					<tbody>
@@ -30,10 +28,18 @@
 							  <tr data-expanded="true">
 								<td>${element.getSurveyId()}</td>
 								<td>${element.getSurveyTitle()}</td>
-								<td>${element.isPublished()?c}</td>
-								<td><a href="/surveycreation/${element.getSurveyId()}/"><span class="glyphicon glyphicon-pencil"></span></a></td>
-								<td><a href="/evaluation/${element.getSurveyId()}/"><span class="glyphicon glyphicon-stats"></span></a></td>
-								<td><a href="#" data-toggle="modal" data-target="#confirm${element.getSurveyId()}"><span class="glyphicon glyphicon-remove"></span></a></td>
+								<td>
+									<#if element.isPublished()?c =="true">
+										<span class="label label-success">veröffentlicht</span>
+									<#else>
+										<span class="label label-warning">Entwurf</span>
+									</#if>
+								</td>
+								<td>
+									<a href="/surveycreation/${element.getSurveyId()}/" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></a>
+									<a href="/evaluation/${element.getSurveyId()}/" class="btn btn-success"><span class="glyphicon glyphicon-stats"></span></a>
+									<a href="#" data-toggle="modal" data-target="#confirm${element.getSurveyId()}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></a>
+								</td>
 							  </tr>
 							
 							 <!-- Modal Confirm-->
@@ -59,7 +65,7 @@
 											<div class="modal-footer">
 											<div class="form-group">
 
-											  <a href="/deletesurvey/${element.getSurveyId()}/" class="btn btn-primary">${msg.get("COMMON_DELETE")}</a>
+											  <a href="/deletesurvey/${element.getSurveyId()}/" class="btn btn-danger">${msg.get("COMMON_DELETE")}</a>
 											  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 											</div>

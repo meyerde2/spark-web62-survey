@@ -24,7 +24,7 @@
 						<input type="checkbox" name="isPublished" id="isPublished" class=""  value="true" <#if currentSurvey.isPublished()?c =="true">checked</#if>/>
 						<label for="isPublished">${msg.get("SURVEY_STATUS")}</label>
 						 <#if currentSurvey.isPublished()?c =="true">
-						 	<span class="label label-success">Veröffentlicht</span>
+						 	<span class="label label-success">veröffentlicht</span>
 						 <#else>
 							<span class="label label-warning">Entwurf</span>
 						 </#if>
@@ -49,9 +49,7 @@
 								
 				
 			</div>
-
 	
-
 			<div class="panel-body">
 				<div class="col-md-12">				
 					<label for="surveyTitle">${msg.get("SURVEY_TITLE_QUESTION")}</label>
@@ -103,8 +101,7 @@
 						<th>ID</th>
 						<th>Titel</th>
 						<th data-type="html" data-sort-use="text" data-breakpoints="xs">Element</th>
-						<th data-type="html" data-sort-use="text" data-breakpoints="xs">bearbeiten</th>
-						<th data-type="html" data-sort-use="text" data-breakpoints="xs">löschen</th>
+						<th data-type="html" data-sort-use="text" data-breakpoints="xs">Aktionen</th>
 					  </tr>
 					</thead>
 					<tbody>
@@ -128,7 +125,7 @@
 								</td>
 								<td>
 
-									<a class="editElement" href="/survey/${element.getSurveyId()}/element/${element.getElementId()}/elementtype/
+									<a class="editElement btn btn-info" href="/survey/${element.getSurveyId()}/element/${element.getElementId()}/elementtype/
 										<#if element.getElementType() == 1>1/</#if>
 										<#if element.getElementType() == 2>2/</#if>
 										<#if element.getElementType() == 3>3/</#if>
@@ -136,10 +133,9 @@
 										<#if element.getElementType() == 5>5/</#if>"
 										><span class="glyphicon glyphicon-pencil"></span>
 									</a>
-									
-								</td>
-								<td><a href="#" data-toggle="modal" data-target="#deleteSurvey${element.getSurveyId()}Element${element.getElementId()}"><span class="glyphicon glyphicon-remove"></span></a></td>
-								<td>
+		
+									<a href="#" data-toggle="modal" data-target="#deleteSurvey${element.getSurveyId()}Element${element.getElementId()}" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span></a></td>
+
 								<!-- Modal Confirm-->
 								<div id="deleteSurvey${element.getSurveyId()}Element${element.getElementId()}" class="modal fade" role="dialog">
 									
@@ -162,7 +158,7 @@
 											<div class="modal-footer">
 											<div class="form-group">
 
-											  <a href="/delete/survey/${element.getSurveyId()}/element/${element.getElementId()}/" class="btn btn-primary">${msg.get("COMMON_DELETE")}</a>
+											  <a href="/delete/survey/${element.getSurveyId()}/element/${element.getElementId()}/" class="btn btn-danger">${msg.get("COMMON_DELETE")}</a>
 											  <button type="button" class="btn btn-default" data-dismiss="modal">${msg.get("COMMON_CANCEL")}</button>
 
 											</div>

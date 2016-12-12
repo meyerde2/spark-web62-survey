@@ -10,9 +10,14 @@
         <link rel="stylesheet" href="/style/css/bootstrap.css">
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
 
+
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.4.0/Chart.bundle.js"></script>
+
         <script src="/style/js/bootstrap.js"></script>
 
         <script src="/style/js/footable.js"></script>
+
+
 
         <link rel="stylesheet" href="/style/css/style.css">
 

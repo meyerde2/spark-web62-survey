@@ -19,7 +19,13 @@
        Dabei ist es sinnvoll mit einfachen Fragestellungen die Umfrage zu beginnen und sukzessive zu komplexeren Zusammenhängen hinüberzuleiten.
        Dies ist darauf zurückzuführen, um den Befragten nicht zu schnell durch zu schwierige Fragen zu überfordern und zugleich zu demotivieren.
     </p>
-    <p class="indexAdvertisement">Genau dies ist mittels WebSurvey62 effizient möglich! Überzeugen Sie sich selbst und melden Sie sich an.</p>
+    <div>
+      <blockquote>
+        <p>Genau dies ist mittels WebSurvey62 effizient möglich! Überzeugen Sie sich selbst und melden Sie sich an.</p>
+        <small><cite title="">Ihr WebSurvey62-Team</cite></small>
+      </blockquote>
+    </div>
+    <p class="indexAdvertisement"></p>
     <img src="/img/surveyCreation.png" class="img-thumbnail"></img>
 
 </div>
