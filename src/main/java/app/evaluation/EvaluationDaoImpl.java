@@ -64,6 +64,7 @@ public class EvaluationDaoImpl implements EvaluationDao {
                 "SUM(CASE WHEN execution_closedquestion.answer4 = 1 THEN 1 ELSE 0 END) AS answer4c, " +
                 "SUM(CASE WHEN execution_closedquestion.answer5 = 1 THEN 1 ELSE 0 END) AS answer5c, " +
                 "SUM(CASE WHEN execution_closedquestion.answer6 = 1 THEN 1 ELSE 0 END) AS answer6c, " +
+                "SUM(CASE WHEN execution_closedquestion.optionalTextfield <> 'NULL' THEN 1 ELSE 0 END) AS answerOtherc, " +
                 "closedquestion.answer1, " +
                 "closedquestion.answer2, " +
                 "closedquestion.answer3, " +
@@ -73,7 +74,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
                 "FROM execution_closedquestion LEFT JOIN closedquestion ON execution_closedquestion.elementId = closedquestion.elementId " +
                 "WHERE execution_closedquestion.surveyId = " + surveyId + " AND execution_closedquestion.elementId= " + elementId +" ;";
 
-        System.out.println(sql.toString());
         try (Connection con = sql2o.open()) {
 
             closedAnswerCounters = con.createQuery(sql).executeAndFetch(ClosedAnswerCounter.class);
@@ -145,7 +145,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
                 "FROM execution_scoretable LEFT JOIN scoretable ON execution_scoretable.elementId = scoretable.elementId " +
                 "WHERE execution_scoretable.surveyId = " + surveyId + " AND execution_scoretable.elementId= " + elementId +" ;";
 
-            System.out.println(sql);
 
             scoreTableAnswerCounters = con.createQuery(sql).executeAndFetch(ScoreTableAnswerCounter.class);
 
@@ -163,8 +162,8 @@ public class EvaluationDaoImpl implements EvaluationDao {
     public List<String> getOptionalTextfieldAnswersClosedQuestion(int surveyId, int questionId) {
         List<String> optionalTestfieldList=  null;
 
-        String sql = "SELECT optionalTextfield FROM `execution_closedquestion` WHERE surveyId= " + surveyId + " " +
-                "AND optionalTextfield is not null;";
+        String sql = "SELECT optionalTextfield FROM `execution_closedquestion` WHERE surveyId= " + surveyId + " AND elementID = " + questionId +
+                " AND optionalTextfield is not null;";
 
         try (Connection con = sql2o.open()) {
 
@@ -215,6 +214,45 @@ public class EvaluationDaoImpl implements EvaluationDao {
         }
         return allAges;
 
+    }
+
+    @Override
+    public int getMaleCount(int surveyId, int elementId) {
+        int maleCount = 0;
+
+        String sql = "SELECT " +
+                "SUM(CASE WHEN execution_personaldata.gender = 1 THEN 1 ELSE 0 END) AS male " +
+                "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ;";
+
+
+        try (Connection con = sql2o.open()) {
+
+            maleCount = con.createQuery(sql).executeScalar(Integer.class);
+
+            System.out.println("maleCount::  "+ maleCount);
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+        return maleCount;
+    }
+
+    @Override
+    public int getFemaleCount(int surveyId, int elementId) {
+        int femaleCount = 0;
+
+        String sql = "SELECT " +
+                "SUM(CASE WHEN execution_personaldata.gender = 2 THEN 1 ELSE 0 END) AS female " +
+                "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ;";
+
+        try (Connection con = sql2o.open()) {
+
+            femaleCount = con.createQuery(sql).executeScalar(Integer.class);
+
+            System.out.println("femaleCount::  "+ femaleCount);
+        }catch (Exception e){
+            System.out.println(e.toString());
+        }
+        return femaleCount;
     }
 
     @Override

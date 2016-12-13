@@ -100,13 +100,14 @@ public class EvaluationController {
                             }
                             standardDeviation = Math.sqrt(standardDeviation / (allAges.size() - 1.0));
 
-                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), median, ageAverage, standardDeviation, allAges, 0, 0, evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
+                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), median, ageAverage, standardDeviation, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                         }else{
-                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), 0.0, 0.0, 0.0, allAges, 0, 0, evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
+                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), 0.0, 0.0, 0.0, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                         }
 
+                        System.out.println("LOCATIONCOUNT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+ personalDataEvaluation.getLocationCount());
                         personalDataEvaluationList.add(personalDataEvaluation);
                         break;
                     case 3:

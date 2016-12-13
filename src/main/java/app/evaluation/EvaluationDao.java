@@ -19,11 +19,13 @@ public interface EvaluationDao {
     //Persönliche Daten
     List<LocationCount> getCountOfDifferentLocations(int surveyId, int elementId);
     List<Integer> getAllAges(int surveyId, int elementId);
-
+    int getMaleCount(int surveyId, int elementId);
+    int getFemaleCount(int surveyId, int elementId);
 
     //Auswertung: geschlossene Frage
     ClosedAnswerCounter getCountOfClosedQuestionAnswers(int surveyId, int elementId);
     List<String> getOptionalTextfieldAnswersClosedQuestion(int surveyId, int elementId);
+
 
     //Auswertung: offene Frage
     List<String> getOpenQuestionEvaluation(int surveyId, int elementId);

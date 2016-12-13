@@ -3,7 +3,6 @@
 
 	<div class="col-md-12">
 		<h1>${msg.get("EVALUATION_HEADING")}</h1>
-		<h2>${msg.get("EVALUATION_HEADING")}</h2>
 
 		<div class="panel panel-default">
 
@@ -30,12 +29,12 @@
 										<#items as personalData>
 											<div class="col-md-8">
 											
-												<h3>${surveyElement.getElementTitle()}</h3>
+												<h2>${surveyElement.getElementTitle()}</h2>
 
 												<#if surveyElement.getElementId() == personalData.getElementId()>
 												
 													<#if personalData.getAges()?has_content>
-													<h4>Alter</h4>
+													<h3>Alter</h3>
 														<table class="table table-striped">
 															<tr>
 																<td>Minimalwert</td>
@@ -71,15 +70,15 @@
 																		data: {
 																			labels: [
 																			
-																			<#list personalData.getAges()>
-																							<#items as age>
+																				<#list personalData.getAges()>
+																					<#items as age>
 
-																								${age}, 
-																		
-																							</#items>
-																						</#list>
+																						${age}, 
+
+																					</#items>
+																				</#list>
 																						
-																			 ],
+																			],
 																			datasets: [
 																				{
 																					label: "Alter",
@@ -125,6 +124,110 @@
 																  });
 															</script>
 														</#if>
+														
+														
+														
+														<#if personalData.getLocationCount()?has_content>
+														
+															<h3>Wohnorte</h3>
+															<canvas id="myChart${personalData.getSurveyId()}u${personalData.getElementId()}LocationCount"></canvas>
+															
+															<script>
+																$(document).ready(function(){
+																	var ctx = document.getElementById("myChart${personalData.getSurveyId()}u${personalData.getElementId()}LocationCount").getContext('2d');
+						
+																	var myChartPersonalData = new Chart(ctx, {
+																		type: 'bar',
+																		data: {
+																			labels: [
+																			
+																				<#list personalData.getLocationCount()>
+																					<#items as locationName>
+
+																						'${locationName.getLocation()}', 
+
+																					</#items>
+																				</#list>
+																						
+																			],
+																			
+																			datasets: [
+																				{
+																					label: "Wohnorte",
+																					backgroundColor: [
+																						"#2ecc71",
+																						"#3498db",
+																						"#95a5a6",
+																						"#9b59b6",
+																						"#f1c40f",
+																						"#e74c3c",
+																						"#c14b3c"
+																					  ],
+																					data: [
+																						<#list personalData.getLocationCount()>
+																							<#items as count>
+
+																								${count.getCount()}, 
+																		
+																							</#items>
+																						</#list>
+																					]
+																				}
+																			]
+					
+																		},
+																		options: {
+																			scales: {
+																				yAxes: [{
+																					ticks: {
+																					beginAtZero: true
+																					}
+																				}]
+																			}
+																		}
+
+																																	  
+																	});
+																  });
+															</script>
+														</#if>
+														
+														<#if personalData.getMaleCounter()?has_content>
+														
+															<h3>Geschlecht</h3>
+															<div class="col-md-6">
+															<canvas id="myChart${personalData.getSurveyId()}u${personalData.getElementId()}Gender"></canvas>
+															
+															<script>
+																$(document).ready(function(){
+																	var ctx = document.getElementById("myChart${personalData.getSurveyId()}u${personalData.getElementId()}Gender").getContext('2d');
+						
+																	var myChartPersonalData = new Chart(ctx, {
+																		type: 'doughnut',
+																		data: {
+																		labels: [
+																				"Männlich",
+																				"Weiblich"
+																			],
+																			datasets: [{
+																				labels: ['Männlich', 'Weiblich'],
+																				backgroundColor: [
+																						"#3498db",
+																						"#FF00BF"
+																					],
+																				data: [${personalData.getMaleCounter()}, ${personalData.getFemaleCounter()}]
+																			}]
+																		}
+																																	  
+																	});
+																  });
+															</script>
+															</div>
+														</#if>
+														
+														
+														
+														
 													</#if>
 												</#if>
 											</div>
@@ -147,10 +250,9 @@
 										<#items as element>
 											<#if surveyElement.getElementId() == element.getElementId()>
 												<div class="col-md-8">
-													<h3>${surveyElement.getElementTitle()}</h3>
-
+													<h2>${surveyElement.getElementTitle()}</h2>
 	
-														<div class="col-md-8">
+														<div class="col-md-7">
 															<canvas id="myChart${element.getSurveyId()}u${element.getElementId()}"></canvas>
 														</div>
 														<script>
@@ -164,7 +266,8 @@
 																		 <#if element.getClosedAnswerCounter().getAnswer3()?has_content> , "${element.getClosedAnswerCounter().getAnswer3()}"</#if>
 																		 <#if element.getClosedAnswerCounter().getAnswer4()?has_content> , "${element.getClosedAnswerCounter().getAnswer4()}"</#if>
 																		 <#if element.getClosedAnswerCounter().getAnswer5()?has_content> , "${element.getClosedAnswerCounter().getAnswer5()}"</#if>
-																		 <#if element.getClosedAnswerCounter().getAnswer6()?has_content> , "${element.getClosedAnswerCounter().getAnswer6()}"</#if>],
+																		 <#if element.getClosedAnswerCounter().getAnswer6()?has_content> , "${element.getClosedAnswerCounter().getAnswer6()}"</#if>
+																		 <#if element.getClosedAnswerCounter().getAnswerOtherc()?has_content> , "Sonstige"</#if>],
 																	datasets: [{
 																	  backgroundColor: [
 																		"#2ecc71",
@@ -172,14 +275,16 @@
 																		"#95a5a6",
 																		"#9b59b6",
 																		"#f1c40f",
-																		"#e74c3c"
+																		"#e74c3c",
+																		"#c14b3c"
 																	  ],
 																	  data: [${element.getClosedAnswerCounter().getAnswer1c()}, 
-																	  ${element.getClosedAnswerCounter().getAnswer2c()}, 
-																	  ${element.getClosedAnswerCounter().getAnswer3c()}, 
-																	  ${element.getClosedAnswerCounter().getAnswer4c()}, 
-																	  ${element.getClosedAnswerCounter().getAnswer5c()}, 
-																	  ${element.getClosedAnswerCounter().getAnswer6c()}]
+																	  ${element.getClosedAnswerCounter().getAnswer2c()}
+																	  <#if element.getClosedAnswerCounter().getAnswer3()?has_content> ,${element.getClosedAnswerCounter().getAnswer3c()}</#if>
+																	  <#if element.getClosedAnswerCounter().getAnswer4()?has_content> ,${element.getClosedAnswerCounter().getAnswer4c()}</#if>
+																	  <#if element.getClosedAnswerCounter().getAnswer5()?has_content> ,${element.getClosedAnswerCounter().getAnswer5c()}</#if> 
+																	  <#if element.getClosedAnswerCounter().getAnswer6()?has_content> , ${element.getClosedAnswerCounter().getAnswer6c()}</#if>
+																	  <#if element.getClosedAnswerCounter().getAnswerOtherc()?has_content> , ${element.getClosedAnswerCounter().getAnswerOtherc()}</#if>]
 																	}]
 																  }
 																});
@@ -188,7 +293,7 @@
 
 													<#if element.getOptionalTextfield()?has_content>
 													<div class="col-md-12">
-													<h4>Sonstige Antworten</h4>
+													<h3>Sonstige Antworten</h3>
 														<table class="table table-striped">
 															<#list element.getOptionalTextfield()>
 																<#items as optionalTextfield>
@@ -228,12 +333,12 @@
 										<#items as element>
 											<#if surveyElement.getElementId() == element.getElementId()>
 												<div class="col-md-8">
-													<h3>${surveyElement.getElementTitle()}</h3>
+													<h2>${surveyElement.getElementTitle()}</h2>
 
 
 													<#if element.getText()?has_content>
-													<div class="col-md-12">
-													<h4>Offene Antworten</h4>
+													<div class="">
+													<h3>Offene Antworten</h3>
 														<table class="table table-striped">
 														<tbody class="openQuestionEvaluationList">
 															<#list element.getText()>
@@ -247,7 +352,7 @@
 															</#list>
 														</tbody>
 														</table>
-														<div class="col-md-12 text-center">
+														<div class="text-center">
 														  <ul class="pagination pagination-lg pager openQuestionEvaluationListPager"></ul>
 														</div>
 													</div>
@@ -275,7 +380,7 @@
 										<#items as element>
 											<#if surveyElement.getElementId() == element.getElementId()>
 												<div class="">
-													<h3>${surveyElement.getElementTitle()}</h3>
+													<h2>${surveyElement.getElementTitle()}</h2>
 
 													
 													<#if element.getScoreTableAnswerCounter().getCriterion1()?has_content>
@@ -307,7 +412,23 @@
 																	  ${element.getScoreTableAnswerCounter().getAnswer1c5()}, 
 																	  ${element.getScoreTableAnswerCounter().getAnswer1c0()}]
 																	}]
-																  }
+																  },
+																	options: {
+																	     layout: {
+																			padding: {
+																			  // Any unspecified dimensions are assumed to be 0
+																			  left: 10,
+																			  bottom: 5
+																			}
+																		  },
+																		scales: {
+																			yAxes: [{
+																				ticks: {
+																				beginAtZero: true
+																				}
+																			}]
+																		}
+																	}																  
 																});
 															});
 														</script>

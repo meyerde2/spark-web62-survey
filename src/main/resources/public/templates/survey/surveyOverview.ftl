@@ -25,7 +25,7 @@
 						<#list surveyList>
 
 							<#items as element>
-							  <tr data-expanded="true">
+							  <tr data-expanded="false">
 								<td>${element.getSurveyId()}</td>
 								<td>${element.getSurveyTitle()}</td>
 								<td>

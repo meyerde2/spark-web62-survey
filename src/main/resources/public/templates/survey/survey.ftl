@@ -109,7 +109,7 @@
 						<#list surveyElements>
 
 							<#items as element>
-							  <tr data-expanded="true">
+							  <tr data-expanded="false">
 								<td>${element.getElementId()}</td>
 								<td>
 								<#if element.getElementTitle()??>
@@ -151,7 +151,7 @@
 									  									  
 											<div class="modal-body">
 
-												<p>Wollen Sie diese Umfrage wirklich löschen?</p>
+												<p>Wollen Sie dieses Element wirklich löschen?</p>
 
 											</div>
 											

@@ -22,7 +22,7 @@
 		<#list users>
 		
 			<#items as user>
-			  <tr data-expanded="true">
+			  <tr data-expanded="false">
 				<td>${user.getId()}</td>
 				<td>${user.getUsername()}</td>
 				<td>${user.getFirstname()}</td>
@@ -31,7 +31,7 @@
 					<#if user.getRole() == 1> Admin</#if>
 					<#if user.getRole() == 2> Ersteller</#if>
 				</td>
-				<td><#if currentUser != user.getUsername()><a href="/user/${user.getUsername()}/" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></a></#if></td>
+				<td><a href="/user/${user.getUsername()}/" class="btn btn-info"><span class="glyphicon glyphicon-pencil"></span></a></td>
 			  </tr>
 			</#items>
 		

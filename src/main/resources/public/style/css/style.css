@@ -6,6 +6,11 @@
 
 }
 
+canvas{
+    margin-bottom:20px;
+    padding-bottom:0px !important;
+
+}
 .navLogout{
 
     display: block;

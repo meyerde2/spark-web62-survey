@@ -15,6 +15,7 @@ public class ClosedAnswerCounter {
     @Getter @Setter Integer answer4c;
     @Getter @Setter Integer answer5c;
     @Getter @Setter Integer answer6c;
+    @Getter @Setter Integer answerOtherc;
 
     @Getter @Setter String answer1;
     @Getter @Setter String answer2;
