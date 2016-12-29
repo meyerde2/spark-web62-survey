@@ -103,7 +103,7 @@ public class EvaluationController {
                             personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), median, ageAverage, standardDeviation, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                         }else{
-                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), 0.0, 0.0, 0.0, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
+                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, null, null, 0.0, 0.0, 0.0, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                         }
 

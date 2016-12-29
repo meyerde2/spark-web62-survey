@@ -393,8 +393,6 @@ public class SurveyController {
 
         if (clientAcceptsHtml(request)) {
 
-            System.out.println("SurveyController serveSurveyControl create closed question..");
-
             try{
 
                 Map attributes = new HashMap<>();
@@ -408,51 +406,32 @@ public class SurveyController {
                 Part file = request.raw().getPart("picture");
                 String pictureFilename = savePictureFile(file);
 
-                    System.out.println("" + request.queryParams("surveyId"));
-                    System.out.println("" + request.queryParams("elementTitle"));
-                    System.out.println("" + request.queryParams("questiontext"));
-                    System.out.println("" + request.queryParams("answer1"));
-                    System.out.println("" + request.queryParams("answer2"));
-                    System.out.println("" + request.queryParams("answer3"));
-
                 int surveyId = Integer.parseInt(request.queryParams("surveyId"));
 
-                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                if (request.queryParams("elementTitle").length() < 1){
                     return false;
                 }
                 if("wrongFormat".equals(pictureFilename)){
                     attributes.put("pictureUpload", "wrongFormat");
                     return false;
                 }else{
-                    System.out.println("right Format");
 
-                    SurveyElement surveyElement = new SurveyElement(0, surveyId, 3, request.queryParams("elementTitle").toString());
+                    SurveyElement surveyElement = new SurveyElement(0, surveyId, 3, request.queryParams("elementTitle"));
                     int elementId = surveyDao.createNewSurveyElement(surveyElement);
 
-
-                    System.out.println("surveyElement.getElementTitle()):  " + surveyElement.getElementTitle());
                     ClosedQuestion closedQuestion = new ClosedQuestion(0, elementId, surveyElement.getElementTitle(),
-                            request.queryParams("situation").toString(),
-                            request.queryParams("questiontext").toString(),
-                            request.queryParams("answer1").toString(),
-                            request.queryParams("answer2").toString(),
-                            request.queryParams("answer3").toString(),
-                            request.queryParams("answer4").toString(),
-                            request.queryParams("answer5").toString(),
-                            request.queryParams("answer6").toString(),
-
-                            Boolean.parseBoolean(request.queryParams("optionalTextfield")),
-                            Boolean.parseBoolean(request.queryParams("multipleSelection")),
-
-                            pictureFilename,
-                            Integer.parseInt(request.queryParams("surveyId").toString()));
+                            request.queryParams("situation"), request.queryParams("questiontext"), request.queryParams("answer1"),
+                            request.queryParams("answer2"), request.queryParams("answer3"), request.queryParams("answer4"),
+                            request.queryParams("answer5"), request.queryParams("answer6"),
+                            Boolean.parseBoolean(request.queryParams("optionalTextfield")), Boolean.parseBoolean(request.queryParams("multipleSelection")),
+                            pictureFilename, Integer.parseInt(request.queryParams("surveyId")));
 
                     surveyDao.createClosedQuestion(closedQuestion);
 
                 }
 
             }catch (Exception e){
-                System.out.println("EXCEPTION:   " + e.toString());
+                System.out.println("Exception:   " + e.toString());
             }
 
             return true;
@@ -491,7 +470,7 @@ public class SurveyController {
                 System.out.println("" + request.queryParams("answer3"));
 
 
-                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                if (request.queryParams("elementTitle").toString().length() < 1){
                     return false;
                 }
                 if("wrongFormat".equals(pictureFilename)){
@@ -561,7 +540,7 @@ public class SurveyController {
 
                 int surveyId = Integer.parseInt(request.queryParams("surveyId"));
 
-                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                if (request.queryParams("elementTitle").toString().length() < 1){
                     return false;
                 }
                 if("wrongFormat".equals(pictureFilename)){
@@ -616,7 +595,7 @@ public class SurveyController {
                 Part file = request.raw().getPart("picture");
                 String pictureFilename = savePictureFile(file);
 
-                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                if (request.queryParams("elementTitle").toString().length() < 1){
                     return false;
                 }
                 if("wrongFormat".equals(pictureFilename)){

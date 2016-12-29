@@ -16,16 +16,16 @@ public class PersonalDataEvaluation {
     @Getter @Setter int surveyId;
     @Getter @Setter int elementId;
 
-    @Getter @Setter int ageMin;
-    @Getter @Setter int ageMax;
+    @Getter @Setter Integer ageMin;
+    @Getter @Setter Integer ageMax;
     @Getter @Setter double ageMedian;
     @Getter @Setter double ageAverage;
     @Getter @Setter double standardDeviation;
 
 
     @Getter @Setter List<Integer> ages;
-    @Getter @Setter int maleCounter;
-    @Getter @Setter int femaleCounter;
+    @Getter @Setter Integer maleCounter;
+    @Getter @Setter Integer femaleCounter;
     @Getter @Setter List<LocationCount> locationCount;
 
 

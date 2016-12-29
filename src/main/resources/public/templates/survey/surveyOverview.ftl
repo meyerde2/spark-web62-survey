@@ -52,7 +52,7 @@
 									
 											<div class="modal-header">
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
-												<h2 class="modal-title">${msg.get("SURVEY_HEADING")}</h2>
+												<h2 class="modal-title">Umfrage löschen</h2>
 											</div>
 									  
 									  
@@ -101,7 +101,7 @@
 		
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">&times;</button>
-					<h2 class="modal-title">${msg.get("SURVEY_HEADING")}</h2>
+					<h2 class="modal-title">Neue Umfrage erstellen</h2>
 				</div>
 		  
 		  

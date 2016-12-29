@@ -146,7 +146,7 @@
 									
 											<div class="modal-header">
 												<button type="button" class="close" data-dismiss="modal">&times;</button>
-												<h2 class="modal-title">${msg.get("SURVEY_HEADING")}</h2>
+												<h2 class="modal-title">Element löschen</h2>
 											</div>
 									  									  
 											<div class="modal-body">
@@ -975,7 +975,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1004,7 +1004,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1029,7 +1029,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1054,7 +1054,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1080,7 +1080,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1106,7 +1106,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}
@@ -1131,7 +1131,7 @@
             request.done(function(msg) {
 				
                 if("false" == msg){
-                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel und einen Text angeben.</p>');
+                    $(".modalResult").html('<p class="btn-lg btn-danger bad notification">Sie müssen mindestens einen Titel angeben.</p>');
                 }else{
 					location.reload();
 				}

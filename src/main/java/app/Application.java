@@ -36,7 +36,6 @@ public class Application{
     public static UserDao userDao;
     public static SurveyDao surveyDao;
     public static EvaluationDao evaluationDao;
-
     public static String picturesDir;
 
     public static  FreeMarkerEngine freeMarkerEngine;
@@ -132,7 +131,7 @@ public class Application{
             get("/user/:username/", UserController.serveOneUser);
 
             post("/createNewUser/", UserController.serveNewUser);
-           // post("/createNewUser",                  (ICRoute) UserController.serveNewUser);
+
             post("/createNewUserLogin/", UserController.serveNewUserLogin);
 
             post("/updateUser/", UserController.updateUser);
@@ -150,8 +149,6 @@ public class Application{
 
                 attributes.put("users", userDao.getAllUsers());
 
-                // The login.ftl file is located in directory:
-                // src/test/resources/spark/template/freemarker
 
                 attributes.put("msg", new MessageBundle(getSessionLocale(request)));
                 attributes.put("currentUser", getSessionCurrentUser(request));
@@ -163,14 +160,6 @@ public class Application{
 
         }
 
-    @FunctionalInterface
-    private interface ICRoute extends Route {
-        default Object handle(Request request, Response response) throws Exception {
-            handle(request);
-            return "";
-        }
-        void handle(Request request) throws Exception;
-    }
 
 
 /*
@@ -254,26 +243,6 @@ public class Application{
             //Set up after-filters (called after each get/post)
             after("*", Filters.addGzipHeader);
 
-
-            get("/hello", (request, response) -> {
-
-                System.out.println("hello world......");
-
-                Map<String, Object> attributes = new HashMap<>();
-                attributes.put("message", "Hello World, my Friend!");
-
-                attributes.put("users", userDao.getAllUsers());
-
-                // The login.ftl file is located in directory:
-                // src/test/resources/spark/template/freemarker
-
-                attributes.put("msg", new MessageBundle(getSessionLocale(request)));
-                attributes.put("currentUser", getSessionCurrentUser(request));
-
-                attributes.put("WebPath", Path.Web.class);
-
-                return new ModelAndView(attributes, "/login.ftl");
-            }, new FreeMarkerEngine());
 
     }
 */
