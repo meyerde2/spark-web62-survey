@@ -67,7 +67,6 @@ public class EvaluationController {
                             List<Integer> allAges = evaluationDao.getAllAges(surveyId, elementId);
                             PersonalDataEvaluation personalDataEvaluation;
 
-                            System.out.println("allAges:   " + allAges.toString());
                             if(allAges != null && allAges.size() > 0){
                                 //Median
                                 double median = 0;
@@ -83,7 +82,6 @@ public class EvaluationController {
                                     }
                                 }
 
-                                System.out.println("into..--");
                                 //Arithmetische Mittel
                                 double ageAverage = 0;
                                 for (int i: allAges) {
@@ -100,15 +98,10 @@ public class EvaluationController {
                                 }
                                 standardDeviation = Math.sqrt(standardDeviation / (allAges.size() - 1.0));
 
-                                System.out.println("MALE: " + evaluationDao.getMaleCount(surveyId, elementId));
-
-                                System.out.println("FEMALE: " +evaluationDao.getFemaleCount(surveyId, elementId));
                                 personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), median, ageAverage, standardDeviation, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                             }else{
-                                System.out.println("MALE2: " + evaluationDao.getMaleCount(surveyId, elementId));
 
-                                System.out.println("FEMALE2: " +evaluationDao.getFemaleCount(surveyId, elementId));
                                 personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, null, null, 0.0, 0.0, 0.0, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                             }

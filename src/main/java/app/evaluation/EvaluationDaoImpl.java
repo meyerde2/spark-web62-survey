@@ -233,7 +233,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
                 "SUM(CASE WHEN execution_personaldata.gender = 1 THEN 1 ELSE 0 END) AS male " +
                 "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " AND execution_personaldata.gender is not null;";
 
-        System.out.println(sql);
         try (Connection con = sql2o.open()) {
 
             maleCount = con.createQuery(sql).executeScalar(Integer.class);
@@ -252,7 +251,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
                 "SUM(CASE WHEN execution_personaldata.gender = 2 THEN 1 ELSE 0 END) AS female " +
                 "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " AND execution_personaldata.gender is not null;";
 
-        System.out.println(sql);
         try (Connection con = sql2o.open()) {
 
             femaleCount = con.createQuery(sql).executeScalar(Integer.class);

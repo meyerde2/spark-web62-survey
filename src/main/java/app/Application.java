@@ -133,16 +133,13 @@ public class Application{
             after("*", Filters.addGzipHeader);
 
         }
-
-
-
-/*
+    /*
     @Override
     public void init() {
             Spark.staticFileLocation("/public");
-            Spark.externalStaticFileLocation("/pictures");
+            Spark.externalStaticFileLocation("/webapps/pictures");
 
-            picturesDir=new File("").getAbsolutePath().toString() + "\\target\\classes\\public\\pictures";
+            picturesDir = new File("").getAbsolutePath().toString() + "\\webapps\\pictures";
             //Test
             //DebugScreen.enableDebugScreen();
 
@@ -238,4 +235,5 @@ public class Application{
 
     }
 */
+
 }
