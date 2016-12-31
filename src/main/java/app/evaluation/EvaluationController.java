@@ -55,6 +55,8 @@ public class EvaluationController {
 
             if (evaluationDao.getExecutionCounterForSurvey(surveyId) != 0){
 
+                System.out.println("into");
+
                 for (SurveyElement element :surveyElementList) {
                     elementId = element.getElementId();
 
@@ -111,6 +113,8 @@ public class EvaluationController {
                         case 3:
                             ClosedQuestionEvaluation closedQuestionEvaluation = new ClosedQuestionEvaluation(surveyId, elementId,
                                     evaluationDao.getCountOfClosedQuestionAnswers(surveyId, elementId), evaluationDao.getOptionalTextfieldAnswersClosedQuestion(surveyId, elementId));
+
+                            System.out.println("closeQuestion:   " + closedQuestionEvaluation);
                             closedQuestionEvaluationList.add(closedQuestionEvaluation);
                             break;
                         case 4:
@@ -127,7 +131,11 @@ public class EvaluationController {
                 }
             }
 
+            System.out.println("personalDataEvaluationList " +personalDataEvaluationList.toString());
             System.out.println("closedQuestionEvaluationList " +closedQuestionEvaluationList.toString());
+            System.out.println("openQuestionEvaluationList " +openQuestionEvaluationList.toString());
+            System.out.println("scoreTableEvaluationList " +scoreTableEvaluationList.toString());
+
             attributes.put("surveyElementList", surveyElementList);
 
             attributes.put("personalDataEvaluationList", personalDataEvaluationList);

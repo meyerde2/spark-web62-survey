@@ -133,7 +133,7 @@ public class Application{
             after("*", Filters.addGzipHeader);
 
         }
-    /*
+/*
     @Override
     public void init() {
             Spark.staticFileLocation("/public");

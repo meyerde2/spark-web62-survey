@@ -922,11 +922,11 @@ public class SurveyController {
                     if(survey.isSessionId()){
                         attributes.put("multipleSurveyExecution", false);
                     }else{
-                        System.out.println("UPDAT EXECUTION ID");
-                        surveyDao.updateExecutionEnd(executionId);
+                        System.out.println("UPDATE EXECUTION ID");
                         attributes.put("multipleSurveyExecution", true);
                     }
                 }
+                surveyDao.updateExecutionEnd(executionId);
                 attributes.put("currentSurvey", surveyDao.getSurveyById(Integer.parseInt(getParamId(request))));
 
                 return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEND));
