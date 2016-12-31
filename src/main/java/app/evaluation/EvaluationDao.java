@@ -11,6 +11,7 @@ import java.util.List;
 public interface EvaluationDao {
 
     int getPlayCounterForSurvey(int surveyId);
+    int getExecutionCounterForSurvey(int surveyId);
 
     List<SurveyElement> getTerminationQuestions();
 
@@ -19,8 +20,8 @@ public interface EvaluationDao {
     //Persönliche Daten
     List<LocationCount> getCountOfDifferentLocations(int surveyId, int elementId);
     List<Integer> getAllAges(int surveyId, int elementId);
-    int getMaleCount(int surveyId, int elementId);
-    int getFemaleCount(int surveyId, int elementId);
+    Integer getMaleCount(int surveyId, int elementId);
+    Integer getFemaleCount(int surveyId, int elementId);
 
     //Auswertung: geschlossene Frage
     ClosedAnswerCounter getCountOfClosedQuestionAnswers(int surveyId, int elementId);

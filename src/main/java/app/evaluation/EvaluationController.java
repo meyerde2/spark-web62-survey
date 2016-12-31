@@ -53,84 +53,88 @@ public class EvaluationController {
             List<OpenQuestionEvaluation> openQuestionEvaluationList = new ArrayList<>();
             List<ScoreTableEvaluation> scoreTableEvaluationList = new ArrayList<>();
 
-            for (SurveyElement element :surveyElementList) {
-                elementId = element.getElementId();
+            if (evaluationDao.getExecutionCounterForSurvey(surveyId) != 0){
 
-                System.out.println("Evaluation ElementID:   " + elementId);
+                for (SurveyElement element :surveyElementList) {
+                    elementId = element.getElementId();
 
-                System.out.println("surveyId Evalu:  " + surveyId );
-                switch (element.getElementType()){
-                    case 1:
-                        // nicht nötig die Text-Klicks hier zu holen?!?
-                        break;
-                    case 2:
+                    switch (element.getElementType()){
+                        case 1:
+                            // nicht nötig die Text-Klicks hier zu holen?!?
+                            break;
+                        case 2:
 
-                        List<Integer> allAges = evaluationDao.getAllAges(surveyId, elementId);
-                        System.out.println(allAges.toString());
-                        PersonalDataEvaluation personalDataEvaluation;
-                        if(allAges.size() != 0){
+                            List<Integer> allAges = evaluationDao.getAllAges(surveyId, elementId);
+                            PersonalDataEvaluation personalDataEvaluation;
 
+                            System.out.println("allAges:   " + allAges.toString());
+                            if(allAges != null && allAges.size() > 0){
+                                //Median
+                                double median = 0;
 
+                                if(allAges.size() > 2){
+                                    if (allAges.size() % 2 == 0){
+                                        int i1 = (int)((allAges.size() / 2) - 0.5);
+                                        int i2 = i1 -1;
+                                        median = allAges.get(i1) + allAges.get(i2) / 2;
+                                    }else{
+                                        median = allAges.get(allAges.size()/2);
 
-                            //Median
-                            double median = 0;
+                                    }
+                                }
 
-                            if (allAges.size() % 2 == 0){
-                                int i1 = (int)((allAges.size() / 2) - 0.5);
-                                int i2 = i1 -1;
-                                median = allAges.get(i1) + allAges.get(i2) / 2;
+                                System.out.println("into..--");
+                                //Arithmetische Mittel
+                                double ageAverage = 0;
+                                for (int i: allAges) {
+                                    ageAverage += i;
+                                }
+
+                                ageAverage = (ageAverage / allAges.size());
+
+                                //Standabweichung | standardDeviation
+                                double standardDeviation = 0.0;
+
+                                for(int i = 0; i < allAges.size(); i++){
+                                    standardDeviation += (allAges.get(i) - ageAverage) * (allAges.get(i)  - ageAverage);
+                                }
+                                standardDeviation = Math.sqrt(standardDeviation / (allAges.size() - 1.0));
+
+                                System.out.println("MALE: " + evaluationDao.getMaleCount(surveyId, elementId));
+
+                                System.out.println("FEMALE: " +evaluationDao.getFemaleCount(surveyId, elementId));
+                                personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), median, ageAverage, standardDeviation, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
+
                             }else{
-                                median = allAges.get(allAges.size()/2);
+                                System.out.println("MALE2: " + evaluationDao.getMaleCount(surveyId, elementId));
+
+                                System.out.println("FEMALE2: " +evaluationDao.getFemaleCount(surveyId, elementId));
+                                personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, null, null, 0.0, 0.0, 0.0, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
 
                             }
 
-                            //Arithmetische Mittel
-                            double ageAverage = 0;
-                            for (int i: allAges) {
-                                ageAverage += i;
-                            }
+                            personalDataEvaluationList.add(personalDataEvaluation);
+                            break;
+                        case 3:
+                            ClosedQuestionEvaluation closedQuestionEvaluation = new ClosedQuestionEvaluation(surveyId, elementId,
+                                    evaluationDao.getCountOfClosedQuestionAnswers(surveyId, elementId), evaluationDao.getOptionalTextfieldAnswersClosedQuestion(surveyId, elementId));
+                            closedQuestionEvaluationList.add(closedQuestionEvaluation);
+                            break;
+                        case 4:
+                            OpenQuestionEvaluation openQuestionEvaluation = new OpenQuestionEvaluation(surveyId, elementId, evaluationDao.getOpenQuestionEvaluation(surveyId, elementId));
+                            openQuestionEvaluationList.add(openQuestionEvaluation);
+                            break;
+                        case 5:
+                            ScoreTableEvaluation scoreTableEvaluation = new ScoreTableEvaluation(surveyId, elementId, evaluationDao.getCountOfScoreTableAnswers(surveyId, elementId));
+                            scoreTableEvaluationList.add(scoreTableEvaluation);
+                            break;
 
-                            ageAverage = (ageAverage / allAges.size());
-
-                            //Standabweichung | standardDeviation
-                            double standardDeviation = 0.0;
-                            for(int i = 0; i < allAges.size(); i++){
-                                standardDeviation += (allAges.get(i) - ageAverage) * (allAges.get(i)  - ageAverage);
-
-                            }
-                            standardDeviation = Math.sqrt(standardDeviation / (allAges.size() - 1.0));
-
-                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, allAges.get(0), allAges.get(allAges.size()-1), median, ageAverage, standardDeviation, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
-
-                        }else{
-                            personalDataEvaluation = new PersonalDataEvaluation(surveyId, elementId, null, null, 0.0, 0.0, 0.0, allAges, evaluationDao.getMaleCount(surveyId, elementId), evaluationDao.getFemaleCount(surveyId, elementId), evaluationDao.getCountOfDifferentLocations(surveyId, elementId));
-
-                        }
-
-                        System.out.println("LOCATIONCOUNT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!"+ personalDataEvaluation.getLocationCount());
-                        personalDataEvaluationList.add(personalDataEvaluation);
-                        break;
-                    case 3:
-                        ClosedQuestionEvaluation closedQuestionEvaluation = new ClosedQuestionEvaluation(surveyId, elementId,
-                                evaluationDao.getCountOfClosedQuestionAnswers(surveyId, elementId), evaluationDao.getOptionalTextfieldAnswersClosedQuestion(surveyId, elementId));
-
-                        closedQuestionEvaluationList.add(closedQuestionEvaluation);
-                        break;
-                    case 4:
-                        OpenQuestionEvaluation openQuestionEvaluation = new OpenQuestionEvaluation(surveyId, elementId, evaluationDao.getOpenQuestionEvaluation(surveyId, elementId));
-                        openQuestionEvaluationList.add(openQuestionEvaluation);
-                        break;
-                    case 5:
-                        ScoreTableEvaluation scoreTableEvaluation = new ScoreTableEvaluation(surveyId, elementId, evaluationDao.getCountOfScoreTableAnswers(surveyId, elementId));
-                        scoreTableEvaluationList.add(scoreTableEvaluation);
-                        break;
+                    }
 
                 }
-
             }
 
-            System.out.println("SURVEY_ELEMENT_LIST:::::::::: " + surveyElementList.toString());
-
+            System.out.println("closedQuestionEvaluationList " +closedQuestionEvaluationList.toString());
             attributes.put("surveyElementList", surveyElementList);
 
             attributes.put("personalDataEvaluationList", personalDataEvaluationList);

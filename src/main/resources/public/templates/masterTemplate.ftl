@@ -1,6 +1,8 @@
 <#macro masterTemplate title="">
+    <#if msg?has_content>
     <html>
     <head>
+
         <title>${msg.get("COMMON_TITLE")}</title>
 
         <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -81,7 +83,7 @@
     </header>
 
     <main>
-        <div id="container" class="container" role="main">
+        <div id="container" class="container" role="main" style="display:none;">
             <div class="row">
                 <div class="col-md-6-col-md-push-4">
                     <#nested />
@@ -99,4 +101,16 @@
 
        </body>
     </html>
+
+    	<script>
+
+    	$(function($){
+
+            $(document).ready(function() {
+               $("#container").fadeIn(500);
+            });
+
+    	});
+    	</script>
+    </#if>
 </#macro>

@@ -1,12 +1,12 @@
 <#import "/masterTemplate.ftl" as layout />
 <@layout.masterTemplate title="Index">
-	
+	<#if currentSurvey?has_content>
 	<div class="col-md-12">
 		
 		<h1>${msg.get("SURVEY_HEADING")}</h1>
 
 		<div class="panel panel-default">
-			
+		
 			<form action="/updateSurvey/${currentSurvey.getSurveyId()}/" method="post" name="updateSurveyForm">
 			<div class="panel-body">
 		  
@@ -63,6 +63,7 @@
 			</div>
 			
 			</form>
+		
 ´		</div>
 	</div>
 	
@@ -1251,4 +1252,5 @@
 		$('.table').footable();
 	});
     </script>
+	</#if>
 </@layout.masterTemplate>

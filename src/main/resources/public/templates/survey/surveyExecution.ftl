@@ -14,6 +14,14 @@
 
                 <form id="surveyExecution" name="surveyExecution" method="post" action="/survey/executionQuestion/">
 
+                    <div class="progress">
+                        <div class="progress-bar progress-bar-striped active" role="progressbar" aria-valuenow="<#if executionId??>${executionId}<#else>0</#if>"
+                            aria-valuemin="0" aria-valuemax="<#if numberOfQuestions??>${numberOfQuestions}<#else>1</#if>" style="width:<#if executionId??>${(executionId / numberOfQuestions * 100)?c}<#else>0</#if>%">
+                            Schritt <#if executionId??>${executionId}<#else>0</#if> von ${numberOfQuestions}
+                        </div>
+                    </div>
+
+
                     <input type="hidden" name="surveyId" id="surveyId" value="${currentSurvey.getSurveyId()}">
                     <input type="hidden" name="elementId" id="elementId" value="${elementId}">
                     <input type="hidden" name="elementType" id="elementType" value="${elementType}">
@@ -179,7 +187,7 @@
 							</div>
 						</#if>	
 						
-						<#if currentSurveyClosedQuestion.isOptionalTextfield()?has_content>
+						<#if currentSurveyClosedQuestion.isOptionalTextfield()?has_content && currentSurveyClosedQuestion.isOptionalTextfield()?c =="true">
 							<div class="form-group">
 								<label for="optionalTextfield">${msg.get("SURVEY_TEXTFIELD_OPTIONAL")}</label>
 								<input type="text" id="optionalTextfield" name="optionalTextfield"  class="form-control" placeholder="${msg.get('SURVEY_TEXTFIELD_OPTIONAL')}" value="">
@@ -217,7 +225,7 @@
 
 						<div class="form-group">
 							<label for="textfield">${msg.get("SURVEY_TEXTELEMENT")}</label>
-							<input type="text" id="text" name="textfield"  class="form-control" placeholder="${msg.get('SURVEY_TEXTELEMENT')}" value="">
+							<input type="text" id="text" name="textfield"  class="form-control" placeholder="${msg.get('SURVEY_TEXTELEMENT')}" value="" required>
 						</div>
 
 						

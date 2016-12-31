@@ -8,7 +8,8 @@ import lombok.Setter;
 @Data
 @AllArgsConstructor
 public class ClosedQuestion {
-    @Getter @Setter int cId;
+
+    @Getter@Setter int cId;
     @Getter @Setter int elementId;
     @Getter @Setter String elementTitle;
     @Getter @Setter String situation;

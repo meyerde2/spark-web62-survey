@@ -13,20 +13,14 @@ import app.user.UserDao;
 import app.user.UserDaoImpl;
 import app.util.Filters;
 import app.util.FreeMarkerEngine;
-import app.util.MessageBundle;
-import app.util.Path;
 import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import org.sql2o.Sql2o;
-import spark.*;
+import spark.Spark;
 import spark.debug.DebugScreen;
 
 import java.io.File;
-import java.util.HashMap;
-import java.util.Map;
 
-import static app.util.RequestUtil.getSessionCurrentUser;
-import static app.util.RequestUtil.getSessionLocale;
 import static spark.Spark.*;
 
 
@@ -38,7 +32,7 @@ public class Application{
     public static EvaluationDao evaluationDao;
     public static String picturesDir;
 
-    public static  FreeMarkerEngine freeMarkerEngine;
+    public static FreeMarkerEngine freeMarkerEngine;
 
     public static void main(String args[]) {
 
@@ -54,7 +48,6 @@ public class Application{
 
             freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(Application.class, "/public/templates/"));
             freeMarkerEngine.setConfiguration(freeMarkerConfiguration);
-
 
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -139,25 +132,6 @@ public class Application{
             //Set up after-filters (called after each get/post)
             after("*", Filters.addGzipHeader);
 
-
-            get("/hello", (request, response) -> {
-
-                System.out.println("hello world......");
-
-                Map<String, Object> attributes = new HashMap<>();
-                attributes.put("message", "Hello World, my Friend!");
-
-                attributes.put("users", userDao.getAllUsers());
-
-
-                attributes.put("msg", new MessageBundle(getSessionLocale(request)));
-                attributes.put("currentUser", getSessionCurrentUser(request));
-
-                attributes.put("WebPath", Path.Web.class);
-
-                return new ModelAndView(attributes, "/login.ftl");
-            }, new FreeMarkerEngine());
-
         }
 
 
@@ -165,23 +139,18 @@ public class Application{
 /*
     @Override
     public void init() {
+            Spark.staticFileLocation("/public");
+            Spark.externalStaticFileLocation("/pictures");
 
-
-           Spark.staticFileLocation("/public");
-           Spark.externalStaticFileLocation("/webapps/pictures");
-
-
-            picturesDir="webapps/pictures";
-            //picturesDir=new File("").getAbsolutePath().toString() + "\\target\\classes\\public\\pictures";
+            picturesDir=new File("").getAbsolutePath().toString() + "\\target\\classes\\public\\pictures";
             //Test
-            DebugScreen.enableDebugScreen();
+            //DebugScreen.enableDebugScreen();
 
             freeMarkerEngine = new FreeMarkerEngine();
             Configuration freeMarkerConfiguration = new Configuration();
 
             freeMarkerConfiguration.setTemplateLoader(new ClassTemplateLoader(Application.class, "/public/templates/"));
             freeMarkerEngine.setConfiguration(freeMarkerConfiguration);
-
 
             try {
                 Class.forName("com.mysql.jdbc.Driver");
@@ -192,6 +161,7 @@ public class Application{
 
                 userDao = new UserDaoImpl(sql2o);
                 surveyDao = new SurveyDaoImpl(sql2o);
+                evaluationDao = new EvaluationDaoImpl(sql2o);
 
                 System.out.println(userDao.getAllUsers());
 
@@ -215,9 +185,13 @@ public class Application{
             get("/index/", IndexController.serveIndexPage);
 
             //Evaluation
-            get("/evaluation/", EvaluationController.serveEvaluationPage);
+            get("/evaluation/:id/", EvaluationController.serveEvaluationPage);
 
-            //Survey
+            //Execute Survey
+            get("/survey/execution/:id/", SurveyController.serveSurveyExecutionPage);
+
+            post("/survey/executionQuestion/", SurveyController.saveSurveyExecutionQuestion);
+            //Create Survey
             get("/surveyoverview/", SurveyController.serveSurveyOverview);
             get("/surveycreation/", SurveyController.serveSurveyCreation);
             get("/surveycreation/:id/", SurveyController.serveSurveyCreation);
@@ -227,7 +201,25 @@ public class Application{
             post("/updateSurvey/:id/", SurveyController.updateSurvey);
 
 
-            post("/upload/", SurveyController.createTextElement);
+            post("/textupload/", SurveyController.createTextElement);
+            post("/textuploadUpdate/", SurveyController.updateTextElement);
+
+            post("/personaldata/", SurveyController.createPersonalDataElement);
+            post("/personaldataUpdate/", SurveyController.updatePersonalDataElement);
+
+            post("/closedquestion/", SurveyController.createClosedQuestion);
+            post("/closedquestionUpdate/", SurveyController.updateClosedQuestion);
+
+            post("/openquestion/", SurveyController.createOpenQuestion);
+            post("/openquestionUpdate/", SurveyController.updateOpenQuestion);
+
+            post("/scoretable/", SurveyController.createScoreTable);
+            post("/scoretableUpdate/", SurveyController.updateScoreTable);
+
+            get("/survey/:surveyId/element/:elementId/elementtype/:elementtype/", SurveyController.serveUpdateSurveyElement);
+            get("/delete/survey/:surveyId/element/:elementId/", SurveyController.deleteSurveyElement);
+
+            //get("/surveyTest/:id/", SurveyController.serveSurveyCreation);
 
             //User
             get("/usercontrol/", UserController.serveUsercontrolPage);
@@ -235,7 +227,7 @@ public class Application{
             get("/user/:username/", UserController.serveOneUser);
 
             post("/createNewUser/", UserController.serveNewUser);
-           // post("/createNewUser",                  (ICRoute) UserController.serveNewUser);
+
             post("/createNewUserLogin/", UserController.serveNewUserLogin);
 
             post("/updateUser/", UserController.updateUser);

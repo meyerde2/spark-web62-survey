@@ -28,6 +28,8 @@ public class UserDaoImpl implements UserDao{
 
     @Override
     public User getUserByUsername(String username) {
+
+        System.out.println("username: " + username);
         return users.stream().filter(b -> b.getUsername().equals(username)).findFirst().orElse(null);
     }
 

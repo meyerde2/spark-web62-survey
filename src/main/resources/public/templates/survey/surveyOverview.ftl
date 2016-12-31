@@ -10,7 +10,7 @@
 			<div class="panel-body">
 		  
 				<div class="">
-				
+
 				  <table class="table table-striped">
 					<thead>
 					  <tr>
@@ -25,6 +25,8 @@
 						<#list surveyList>
 
 							<#items as element>
+							
+							<#if currentUserObjekt?? && currentUserObjekt.getRole() == 1 || element.getUserId() == currentUserObjekt.getId()>
 							  <tr data-expanded="false">
 								<td>${element.getSurveyId()}</td>
 								<td>${element.getSurveyTitle()}</td>
@@ -74,10 +76,11 @@
 										</div>
 									</div>
 								</div>
-								</#items>
+							</#if>
+							</#items>
 						<#else>
 
-						  <p>no </p>
+						  <p>Keine Elemente vorhanden</p>
 						  
 						</#list>
 					</#if>

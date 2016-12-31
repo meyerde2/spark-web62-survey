@@ -19,8 +19,8 @@ public class PersonalDataExecution {
 
     @Getter @Setter String firstname;
     @Getter @Setter String lastname;
-    @Getter @Setter int age;
-    @Getter @Setter int gender; //1 = m; 2 = w
+    @Getter @Setter Integer age;
+    @Getter @Setter Integer gender; //1 = m; 2 = w
     @Getter @Setter String location;
     @Getter @Setter int surveyCounterId;
 

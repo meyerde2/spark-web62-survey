@@ -20,20 +20,22 @@
 								<!--<div class="row"> -->
 							</#if>
 							<#if surveyElement.getElementType() == 2>
-			
+´
 								<#if personalDataEvaluationList?has_content>
 									<#assign elementCounter = elementCounter + 1>
 
 									<#list personalDataEvaluationList>
 
 										<#items as personalData>
+										
 											<div class="col-md-8">
 											
 												<h2>${surveyElement.getElementTitle()}</h2>
-
+													
 												<#if surveyElement.getElementId() == personalData.getElementId()>
-												
+
 													<#if personalData.getAges()?has_content>
+
 													<h3>Alter</h3>
 														<table class="table table-striped">
 															<tr>
@@ -124,11 +126,12 @@
 																  });
 															</script>
 														</#if>
+
+													</#if>
+													
+													<#if personalData.getLocationCount()?has_content && personalData.getLocationCount()?size != 1 >
 														
-														
-														
-														<#if personalData.getLocationCount()?has_content>
-														
+
 															<h3>Wohnorte</h3>
 															<canvas id="myChart${personalData.getSurveyId()}u${personalData.getElementId()}LocationCount"></canvas>
 															
@@ -224,11 +227,6 @@
 															</script>
 															</div>
 														</#if>
-														
-														
-														
-														
-													</#if>
 												</#if>
 											</div>
 										</#items>
@@ -261,8 +259,9 @@
 																var myChart = new Chart(ctx, {
 																  type: 'pie',
 																  data: {
-																	labels: ["${element.getClosedAnswerCounter().getAnswer1()}",
-																		 "${element.getClosedAnswerCounter().getAnswer2()}"
+																	labels: [
+																		"${element.getClosedAnswerCounter().getAnswer1()}"
+																		<#if element.getClosedAnswerCounter().getAnswer2()?has_content> , "${element.getClosedAnswerCounter().getAnswer2()}"</#if>
 																		 <#if element.getClosedAnswerCounter().getAnswer3()?has_content> , "${element.getClosedAnswerCounter().getAnswer3()}"</#if>
 																		 <#if element.getClosedAnswerCounter().getAnswer4()?has_content> , "${element.getClosedAnswerCounter().getAnswer4()}"</#if>
 																		 <#if element.getClosedAnswerCounter().getAnswer5()?has_content> , "${element.getClosedAnswerCounter().getAnswer5()}"</#if>
@@ -278,11 +277,12 @@
 																		"#e74c3c",
 																		"#c14b3c"
 																	  ],
-																	  data: [${element.getClosedAnswerCounter().getAnswer1c()}, 
-																	  ${element.getClosedAnswerCounter().getAnswer2c()}
-																	  <#if element.getClosedAnswerCounter().getAnswer3()?has_content> ,${element.getClosedAnswerCounter().getAnswer3c()}</#if>
-																	  <#if element.getClosedAnswerCounter().getAnswer4()?has_content> ,${element.getClosedAnswerCounter().getAnswer4c()}</#if>
-																	  <#if element.getClosedAnswerCounter().getAnswer5()?has_content> ,${element.getClosedAnswerCounter().getAnswer5c()}</#if> 
+																	  data: [
+																	  ${element.getClosedAnswerCounter().getAnswer1c()}
+																	  <#if element.getClosedAnswerCounter().getAnswer2()?has_content> , ${element.getClosedAnswerCounter().getAnswer2c()}</#if>
+																	  <#if element.getClosedAnswerCounter().getAnswer3()?has_content> , ${element.getClosedAnswerCounter().getAnswer3c()}</#if>
+																	  <#if element.getClosedAnswerCounter().getAnswer4()?has_content> , ${element.getClosedAnswerCounter().getAnswer4c()}</#if>
+																	  <#if element.getClosedAnswerCounter().getAnswer5()?has_content> , ${element.getClosedAnswerCounter().getAnswer5c()}</#if> 
 																	  <#if element.getClosedAnswerCounter().getAnswer6()?has_content> , ${element.getClosedAnswerCounter().getAnswer6c()}</#if>
 																	  <#if element.getClosedAnswerCounter().getAnswerOtherc()?has_content> , ${element.getClosedAnswerCounter().getAnswerOtherc()}</#if>]
 																	}]

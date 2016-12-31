@@ -43,6 +43,9 @@ public class SurveyController {
 
             attributes.put("surveyList", surveyDao.getAllSurveys(userDao.getUserByUsername(request.session().attribute("currentUser")).getId()));
 
+            User user = userDao.getUserByUsername(request.session().attribute("currentUser"));
+            attributes.put("currentUserObjekt", user);
+
             attributes.put("currentPage", "survey");
             return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYOVERVIEW));
         }
@@ -63,11 +66,9 @@ public class SurveyController {
             attributes.putAll(ViewUtil.getTemplateVariables(request));
             attributes.put("currentPage", "survey");
 
-
             User user = userDao.getUserByUsername(request.session().attribute("currentUser"));
             System.out.println("username:::  " + request.session().attribute("currentUser"));
-
-            System.out.println("user:::  " + user);
+            attributes.put("currentUserObjekt", user);
 
             surveyDao.createNewSurvey(new Survey(0, request.queryParams("surveyTitle"),
                     user.getId(),
@@ -292,7 +293,7 @@ public class SurveyController {
 
         if (clientAcceptsHtml(request)) {
 
-            System.out.println("SurveyController serveSurveyControl createPersonalDataElement----------------");
+            System.out.println("SurveyController serveSurveyControl createPersonalDataElement");
             Map attributes = new HashMap<>();
             attributes.putAll(ViewUtil.getTemplateVariables(request));
 
@@ -303,7 +304,6 @@ public class SurveyController {
             System.out.println(Boolean.parseBoolean(request.queryParams("age").toString()));
             System.out.println(Boolean.parseBoolean(request.queryParams("gender").toString()));
             System.out.println(Boolean.parseBoolean(request.queryParams("locationP").toString()));
-
 
             if ((request.queryParams("elementTitle").toString().length() < 1) ||
                     (!Boolean.parseBoolean(request.queryParams("firstname").toString()) &&
@@ -342,7 +342,7 @@ public class SurveyController {
 
         if (clientAcceptsHtml(request)) {
 
-            System.out.println("SurveyController serveSurveyControl UPDATE  PersonalDataElement----------------");
+            System.out.println("SurveyController serveSurveyControl UPDATE PersonalDataElement");
 
             try {
 
@@ -431,7 +431,7 @@ public class SurveyController {
                 }
 
             }catch (Exception e){
-                System.out.println("Exception:   " + e.toString());
+                System.out.println("Exception: " + e.toString());
             }
 
             return true;
@@ -807,10 +807,6 @@ public class SurveyController {
             attributes.putAll(ViewUtil.getTemplateVariables(request));
             attributes.put("currentPage", "survey");
 
-            ///
-            ////
-
-
             ///Existiert bereits eine Session-ID?
             System.out.println("session_id:  " + request.session().id());
 
@@ -820,10 +816,9 @@ public class SurveyController {
             if (!survey.isPublished){
                 attributes.put("currentSurvey", surveyDao.getSurveyById(Integer.parseInt(getParamId(request))));
                 attributes.put("draft", true);
-
-
                 return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYEND));
             }
+
             String ipAddress = request.ip();
             String sessionId = request.session().id();
 
@@ -835,9 +830,11 @@ public class SurveyController {
 
             List<SurveyElement> allSurveyElements = surveyDao.getAllSurveyElements(surveyId);
 
-
             System.out.println("lastQuestionId:   " + lastQuestionId);
             System.out.println("executionId:   " + executionId);
+
+            attributes.put("executionId", lastQuestionId + 1);
+            attributes.put("numberOfQuestions", allSurveyElements.size());
 
             int elementId = 0;
             int elementType = 0;
@@ -910,7 +907,7 @@ public class SurveyController {
 
             }else{
                 //survey end
-                System.out.println("END OF GAME!!!!!!!!!!!!!!!!!!!!");
+                System.out.println(" - - - - - - END OF GAME  - - - - - - ");
 
                 System.out.println("survey.isIpAddress().  " + survey.isIpAddress());
                 System.out.println("survey.isSessionId().  " + survey.isSessionId());
@@ -954,14 +951,13 @@ public class SurveyController {
 
         if (clientAcceptsHtml(request)) {
 
-            System.out.println("---------------------SurveyController SAVE SURVEY EXECUTION------------------");
+            System.out.println("--------SurveyController SAVE SURVEY EXECUTION-----------");
             Map attributes = new HashMap<>();
             attributes.putAll(ViewUtil.getTemplateVariables(request));
             attributes.put("currentPage", "survey");
 
-            ///
-            ////
-
+            attributes.put("executionId", 1);
+            attributes.put("numberOfQuestions", 2);
 
             ///Existiert bereits eine Session-ID?
             System.out.println("session_id:  " + request.session().id());
@@ -983,12 +979,8 @@ public class SurveyController {
 
             }
 
-            System.out.println("SURVEY---------COUNTER-----ID:::     " + surveyCounterId);
-
             int elementType = Integer.parseInt(request.queryParams("elementType"));
             int elementId = Integer.parseInt(request.queryParams("elementId"));
-            System.out.println("ELEMENTID ==========" + elementId);
-            System.out.println("ELEMENTTYPE ==========" + elementType);
 
             int resultId = 0;
                 switch (elementType){
@@ -1004,12 +996,28 @@ public class SurveyController {
                                 || !Strings.isNullOrEmpty(request.queryParams("gender"))
                                 || !Strings.isNullOrEmpty(request.queryParams("location"))){
 
+                            Integer age = null;
+                            Integer gender = null;
+
+                            try {
+                                age = Integer.parseInt(request.queryParams("age"));
+                            }catch (Exception e){
+                                System.out.println(e.toString());
+                            }
+
+                            try {
+                                gender = Integer.parseInt(request.queryParams("gender"));
+                            }catch (Exception e){
+                                System.out.println(e.toString());
+                            }
+
+
                             //new Personal Data Object needed
                             surveyDao.saveExecutionPersonalData(new PersonalDataExecution(0, surveyId, elementId, elementType, sessionId, ipAddress, questionId,
                                     request.queryParams("firstname"),
                                     request.queryParams("lastname"),
-                                    Integer.parseInt(request.queryParams("age")),
-                                    Integer.parseInt(request.queryParams("gender")),
+                                    age,
+                                    gender,
                                     request.queryParams("location"), surveyCounterId));
                         }else{
                             resultId = -1;

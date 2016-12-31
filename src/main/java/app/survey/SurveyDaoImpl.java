@@ -24,8 +24,7 @@ public class SurveyDaoImpl implements SurveyDao {
     public List<Survey> getAllSurveys(int userId) {
         List<Survey> surveyList;
         try (Connection conn = sql2o.open()) {
-            surveyList= conn.createQuery("SELECT * FROM survey")
-                    .executeAndFetch(Survey.class);
+            surveyList= conn.createQuery("SELECT * FROM survey").executeAndFetch(Survey.class);
             return surveyList;
         }
     }
@@ -370,8 +369,6 @@ public class SurveyDaoImpl implements SurveyDao {
 
             con.setRollbackOnException(false);
 
-            System.out.println(text.toString());
-
             if (text.getPicture() == null || text.getPicture().length() < 1){
 
                 String sqlText ="UPDATE text SET text = :text " +
@@ -409,8 +406,6 @@ public class SurveyDaoImpl implements SurveyDao {
         try (Connection con = sql2o.open()) {
 
             con.setRollbackOnException(false);
-
-            System.out.println(personalData.toString());
 
             String sqlText =
                     "UPDATE personaldata SET isFirstname = :isFirstname, isLastname = :isLastname, isAge = :isAge, " +
@@ -452,7 +447,7 @@ public class SurveyDaoImpl implements SurveyDao {
                                 "answer3 = :answer3, answer4 = :answer4, answer5 = :answer5, answer6 = :answer6, optionalTextfield = :optionalTextfield, " +
                                 "multipleSelection = :multipleSelection  " +
                                 "WHERE elementId = " + closedQuestion.getElementId()+ " ;";
-                con.setRollbackOnException(false);
+
                 con.createQuery(sql)
                         .addParameter("situation", closedQuestion.getSituation())
                         .addParameter("questiontext", closedQuestion.getQuestiontext())
@@ -471,7 +466,7 @@ public class SurveyDaoImpl implements SurveyDao {
                                 "answer3 = :answer3, answer4 = :answer4, answer5 = :answer5, answer6 = :answer6, optionalTextfield = :optionalTextfield, " +
                                 "multipleSelection = :multipleSelection, picture = :picture " +
                                 "WHERE elementId = " + closedQuestion.getElementId()+ " ;";
-                con.setRollbackOnException(false);
+
                 con.createQuery(sql)
                         .addParameter("situation", closedQuestion.getSituation())
                         .addParameter("questiontext", closedQuestion.getQuestiontext())
@@ -553,7 +548,6 @@ public class SurveyDaoImpl implements SurveyDao {
     @Override
     public boolean updateScoreTableQuestion(ScoreTable scoreTable) {
 
-
         try (Connection con = sql2o.open()) {
             con.setRollbackOnException(false);
 
@@ -590,10 +584,6 @@ public class SurveyDaoImpl implements SurveyDao {
                         .executeUpdate();
             }
 
-
-
-
-
             String sqlSurveyElementTitle =
                     "UPDATE surveyelementtitle SET elementTitle = :elementTitle " +
                             "WHERE elementId = " +scoreTable.getElementId() + " ;";
@@ -629,11 +619,9 @@ public class SurveyDaoImpl implements SurveyDao {
                 " ORDER BY elementId ASC ;";
 
         try (Connection conn = sql2o.open()) {
-            surveyElements = conn.createQuery(sql)
-                    .executeAndFetch(SurveyElement.class);
+            surveyElements = conn.createQuery(sql).executeAndFetch(SurveyElement.class);
         }
 
-        System.out.println("surveyElements.get(0):  " + surveyElements.get(0).toString());
         return surveyElements.get(0);
     }
 
@@ -646,7 +634,6 @@ public class SurveyDaoImpl implements SurveyDao {
 
             String sqlDeleteElementType = "";
 
-            System.out.println("Which ElementType?  " + surveyElement.getElementType());
             switch (surveyElement.getElementType()){
                 case 1:
                     sqlDeleteElementType = "DELETE FROM `text` WHERE elementId = " + elementId +" ;";
@@ -666,7 +653,6 @@ public class SurveyDaoImpl implements SurveyDao {
                     break;
             }
 
-            System.out.println("SQL-String ElementType" + sqlDeleteElementType);
             String sql = "DELETE FROM `surveyelement` WHERE`surveyId` = "+ surveyId +" AND elementId = " + elementId +" ;";
             String sqlDeleteSurveyElementTitle = "DELETE FROM `surveyelementtitle` WHERE`surveyId` = "+ surveyId +" AND elementId = " + elementId +" ;";
 
@@ -696,9 +682,7 @@ public class SurveyDaoImpl implements SurveyDao {
 
 
         try (Connection conn = sql2o.open()) {
-            textList = conn.createQuery(sql)
-                    .executeAndFetch(Text.class);
-
+            textList = conn.createQuery(sql).executeAndFetch(Text.class);
             return textList.get(0);
         }
 
@@ -724,9 +708,7 @@ public class SurveyDaoImpl implements SurveyDao {
 
 
         try (Connection conn = sql2o.open()) {
-            personalData = conn.createQuery(sql)
-                    .executeAndFetch(PersonalData.class);
-
+            personalData = conn.createQuery(sql).executeAndFetch(PersonalData.class);
             return personalData.get(0);
         }
     }
@@ -830,13 +812,11 @@ public class SurveyDaoImpl implements SurveyDao {
                         " WHERE surveyId = " + surveyId + " AND " +
                         " ipAddress ='" + ipAddress+ "' " +
                         " ORDER BY questionId DESC LIMIT 1 ;";
-                System.out.println("isIpAddress:..   " + sql);
             }else{
                 sql = "SELECT questionId FROM execution_survey  " +
                         " WHERE sessionId ='" + session + "' AND " +
                         " surveyId = " + surveyId + " " +
                         " ORDER BY questionId DESC LIMIT 1 ;";
-                System.out.println("isIpAddress ELSE::: " + sql);
             }
 
         }else {
@@ -848,7 +828,6 @@ public class SurveyDaoImpl implements SurveyDao {
                         " surveyId = " + surveyId + " AND " +
                         " surveyCounterId = " + executionId + " " +
                         " ORDER BY questionId DESC LIMIT 1 ;";
-                System.out.println("else:  " + sql);
             }
 
         }
@@ -870,15 +849,6 @@ public class SurveyDaoImpl implements SurveyDao {
 
         int executionId;
 
-        System.out.println("getLatestExecutionId------");
-        /*
-        String sql = "SELECT surveyCounterId FROM execution_counter " +
-                " surveyId = " + surveyId + " AND " +
-                " end = " + 0 + " AND " +
-                " ORDER BY surveyCounterId DESC LIMIT 1 ;";
-*/
-
-
         String sql = "SELECT" +
                 "  execution_counter.surveyCounterId" +
                 " FROM" +
@@ -891,8 +861,6 @@ public class SurveyDaoImpl implements SurveyDao {
                 " AND execution_survey.sessionId = '" + session + "'" +
                 " ORDER BY " +
                 "  execution_counter.surveyCounterId DESC LIMIT 1;";
-
-        System.out.println("getLatestExecutionId - sql: " +sql);
 
         try (Connection con = sql2o.open()) {
 
@@ -950,7 +918,6 @@ public class SurveyDaoImpl implements SurveyDao {
     @Override
     public boolean saveExecutionText(TextExecution textExecution) {
 
-        System.out.println("Texti speicher,,,,,,,,,,,,,,,,,,");
         String sql =
                 "INSERT INTO execution_survey(surveyId, elementId, elementType, sessionId, ipAddress, questionId, surveyCounterId, date) " +
                         "VALUES (:surveyId, :elementId, :elementType, :sessionId, :ipAddress, :questionId, :surveyCounterId, :date)";
@@ -970,7 +937,6 @@ public class SurveyDaoImpl implements SurveyDao {
             return true;
         }
         catch (Exception e){
-            System.out.println("texti wrongiiiiiiiiiii");
             System.out.println(e.toString());
             return false;
         }
@@ -995,7 +961,6 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("questionId", personalDataExecution.getQuestionId())
                     .addParameter("surveyCounterId", personalDataExecution.getSurveyCounterId())
                     .addParameter("date", getCurrentDate())
-
                     .executeUpdate();
 
             String sqlPersonalData =
@@ -1009,13 +974,12 @@ public class SurveyDaoImpl implements SurveyDao {
                     .addParameter("age", personalDataExecution.getAge())
                     .addParameter("gender", personalDataExecution.getGender())
                     .addParameter("location", personalDataExecution.getLocation())
-
                     .executeUpdate();
 
             return true;
         }
         catch (Exception e){
-            System.out.println(e.toString());
+            System.out.println("PERSONAL DATA ERROR: " +  e.toString());
             return false;
         }
     }

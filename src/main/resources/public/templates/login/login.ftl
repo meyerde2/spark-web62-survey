@@ -26,7 +26,7 @@
       </blockquote>
     </div>
     <p class="indexAdvertisement"></p>
-    <img src="/img/surveyCreation.png" class="img-thumbnail"></img>
+    <img src="/img/surveyEditor.png" class="img-thumbnail"></img>
 
 </div>
 

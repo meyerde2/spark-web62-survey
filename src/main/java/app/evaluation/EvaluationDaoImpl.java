@@ -36,6 +36,20 @@ public class EvaluationDaoImpl implements EvaluationDao {
     }
 
     @Override
+    public int getExecutionCounterForSurvey(int surveyId) {
+        int count;
+        String sql = "SELECT `surveyCounterId` FROM `execution_counter` WHERE  `surveyId` = " + surveyId + " AND `end`= 1";
+
+        try (Connection con = sql2o.open()) {
+            count = Integer.parseInt(con.createQuery(sql).executeScalar().toString());
+        }catch (Exception e){
+            System.out.println(e.toString());
+            count = 0;
+        }
+        return count;
+    }
+
+    @Override
     public List<SurveyElement> getTerminationQuestions() {
 
         List<SurveyElement> terminatedQuestions = null;
@@ -82,7 +96,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
             System.out.println(e.toString());
         }
 
-        System.out.println("obj  closedAnswerCounters" + closedAnswerCounters);
         return closedAnswerCounters.get(0);
     }
 
@@ -150,7 +163,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
 
             scoreTableAnswerCounterList.add(scoreTableAnswerCounters.get(0));
 
-
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -173,7 +185,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
             System.out.println(e.toString());
         }
 
-        System.out.println("optionalTestfieldList:    " + optionalTestfieldList);
         return optionalTestfieldList;
     }
 
@@ -188,7 +199,6 @@ public class EvaluationDaoImpl implements EvaluationDao {
 
             countOfDifferentLocations = con.createQuery(sql).executeAndFetch(LocationCount.class);
 
-            System.out.println("count::  "+ countOfDifferentLocations);
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -202,13 +212,12 @@ public class EvaluationDaoImpl implements EvaluationDao {
 
         List<Integer> allAges=  null;
 
-        String sql = "SELECT age FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ORDER BY age ASC;";
+        String sql = "SELECT age FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + "  AND age is not null  ORDER BY age ASC;";
 
         try (Connection con = sql2o.open()) {
 
             allAges = con.createQuery(sql).executeScalarList(Integer.class);
 
-            System.out.println("count::  "+ allAges);
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -217,19 +226,18 @@ public class EvaluationDaoImpl implements EvaluationDao {
     }
 
     @Override
-    public int getMaleCount(int surveyId, int elementId) {
-        int maleCount = 0;
+    public Integer getMaleCount(int surveyId, int elementId) {
+        Integer maleCount = 0;
 
         String sql = "SELECT " +
                 "SUM(CASE WHEN execution_personaldata.gender = 1 THEN 1 ELSE 0 END) AS male " +
-                "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ;";
+                "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " AND execution_personaldata.gender is not null;";
 
-
+        System.out.println(sql);
         try (Connection con = sql2o.open()) {
 
             maleCount = con.createQuery(sql).executeScalar(Integer.class);
 
-            System.out.println("maleCount::  "+ maleCount);
         }catch (Exception e){
             System.out.println(e.toString());
         }
@@ -237,18 +245,18 @@ public class EvaluationDaoImpl implements EvaluationDao {
     }
 
     @Override
-    public int getFemaleCount(int surveyId, int elementId) {
-        int femaleCount = 0;
+    public Integer getFemaleCount(int surveyId, int elementId) {
+        Integer femaleCount = 0;
 
         String sql = "SELECT " +
                 "SUM(CASE WHEN execution_personaldata.gender = 2 THEN 1 ELSE 0 END) AS female " +
-                "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " ;";
+                "FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " AND execution_personaldata.gender is not null;";
 
+        System.out.println(sql);
         try (Connection con = sql2o.open()) {
 
             femaleCount = con.createQuery(sql).executeScalar(Integer.class);
 
-            System.out.println("femaleCount::  "+ femaleCount);
         }catch (Exception e){
             System.out.println(e.toString());
         }

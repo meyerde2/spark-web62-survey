@@ -70,7 +70,6 @@ public class ViewUtil {
         String username = getSessionCurrentUser(request);
 
         attributes.put("currentUser", username);
-        System.out.println("userdao;:  " +userDao);
 
         if (username != null && !username.isEmpty() && userDao != null){
             attributes.put("currentRole", userDao.getUserByUsername(getSessionCurrentUser(request)).getRole());

@@ -11,20 +11,15 @@ public class TestClass {
     @Test
     public void testGameId() {
 
-        int i = 1 +1;
-
         //System.out.println("i: " + i);
         String DB_URL = "jdbc:mysql://localhost:3306/survey";
         String USER = "root";
         String PASS = "";
         Sql2o sql2o = new Sql2o(DB_URL, USER, PASS);
 
-
         EvaluationDao evaluationDao = new EvaluationDaoImpl(sql2o);
 
-
         System.out.println(evaluationDao.getCountOfDifferentLocations(3, 73));
-
 
     }
 }
