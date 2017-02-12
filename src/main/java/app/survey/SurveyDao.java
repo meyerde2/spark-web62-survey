@@ -11,6 +11,7 @@ import java.util.List;
 public interface SurveyDao {
 
     List<Survey> getAllSurveys(int userId);
+    List<Survey> getAllSurveysRoleErsteller(int userId);
     List<SurveyElement> getAllSurveyElements(int surveyId);
     Survey getSurveyById(int surveyId);
     boolean createNewSurvey(Survey survey);

@@ -4,6 +4,8 @@ import app.Application;
 import app.login.LoginController;
 import app.util.Path;
 import app.util.ViewUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONObject;
 import org.mindrot.jbcrypt.BCrypt;
 import spark.ModelAndView;
 import spark.Request;
@@ -79,6 +81,18 @@ public class UserController {
         return ViewUtil.forbidden.handle(request, response);
     };
 
+    public static Route jsonGetAllUsers = (Request request, Response response) -> {
+        response.status(200);
+
+        User user = userDao.getUserByUsername(getParamUsername(request));
+        System.out.println("user.getRole() |||||  " + user.getRole());
+        return dataToJson(userDao.getAllUsersForRole(user.getUsername(), user.getRole()));
+    };
+
+    public static Route jsonGetUserByUsername = (Request request, Response response) -> {
+        response.status(200);
+        return dataToJson(userDao.getUserByUsername(getParamUsername(request)));
+    };
 
     public static Route serveNewUser = (Request request, Response response) -> {
 
@@ -121,37 +135,60 @@ public class UserController {
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+    public static Route jsonCreateNewUser = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+
+        System.out.println("_________________________________________json create new User__________________________________________________________________________");
+            if (object.get("password").toString().length() >= 6 && object.get("password").toString().equals(object.get("confirmedPassword").toString())) {
+                String salt = generateSalt();
+                String hashedPassword = generateHashedPassword(object.get("password").toString(), salt);
+
+                System.out.println("role:  " + object.get("role").toString());
+
+                User newUser = new User(0,object.get("username").toString(), object.get("firstname").toString(), object.get("lastname").toString(), salt, hashedPassword, Integer.parseInt(object.get("role").toString()), 0);
+
+                System.out.println("Status createUser" + userDao.createUser(newUser));
+                return dataToJson(userDao.getUserByUsername(newUser.getUsername()));
+            }
+        return "error: passwords not equal";
+    };
+
     public static Route serveNewUserLogin = (Request request, Response response) -> {
 
-            System.out.println("username:  " + request.queryParams("username"));
-            System.out.println("password:  " + request.queryParams("password"));
-            System.out.println("passwordConfirmed:  " + request.queryParams("passwordConfirmed"));
+        System.out.println("username:  " + request.queryParams("username"));
+        System.out.println("password:  " + request.queryParams("password"));
+        System.out.println("passwordConfirmed:  " + request.queryParams("passwordConfirmed"));
 
 
-            if (request.queryParams("password").length() >= 6 && request.queryParams("password").equals(request.queryParams("passwordConfirmed"))){
-                String salt = generateSalt();
-                String hashedPassword = generateHashedPassword(request.queryParams("password"), salt);
+        if (request.queryParams("password").length() >= 6 && request.queryParams("password").equals(request.queryParams("passwordConfirmed"))){
+            String salt = generateSalt();
+            String hashedPassword = generateHashedPassword(request.queryParams("password"), salt);
 
-                System.out.println("role:  " + request.queryParams("role"));
+            System.out.println("role:  " + request.queryParams("role"));
 
-                User newUser = new User(0, request.queryParams("username"), "", "", salt, hashedPassword,  2, 0);
+            User newUser = new User(0, request.queryParams("username"), "", "", salt, hashedPassword,  2, 0);
 
-                userDao.getAllUsers();
+            userDao.getAllUsers();
 
-                String returnString;
-                if(userDao.createUser(newUser)){
-                    returnString = "success";
-                }else{
-                    returnString = "usernameAlreadyExists";
-                }
-
-                return returnString;
-
-            }else {
-
-                return "pwFailed";
-
+            String returnString;
+            if(userDao.createUser(newUser)){
+                returnString = "success";
+            }else{
+                returnString = "usernameAlreadyExists";
             }
+
+            return returnString;
+
+        }else {
+
+            return "pwFailed";
+
+        }
 
     };
 
@@ -176,6 +213,39 @@ public class UserController {
         }
         return ViewUtil.notAcceptable.handle(request, response);
     };
+
+
+    public static Route jsonUpdateUser= (Request request, Response response) -> {
+
+        System.out.println("body:  " + request.body());
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        User user = userDao.getUserByUsername(object.get("username").toString());
+
+        user.setFirstname(object.get("firstname").toString());
+        user.setLastname(object.get("lastname").toString());
+
+        if (object.get("password") !=null && object.get("confirmedPassword") !=null && object.get("password").toString().length() > 0 && object.get("password").toString().equals(object.get("confirmedPassword").toString())){
+
+            String salt = generateSalt();
+            String hashedPassword = generateHashedPassword(object.get("password").toString(), salt);
+
+            user.setSalt(salt);
+            user.setHashedPassword(hashedPassword);
+            System.out.println("new PW");
+        }
+
+        user.setRole(Integer.parseInt(object.get("role").toString()));
+        userDao.updateUser(user);
+
+        return dataToJson(userDao.getUserByUsername(user.getUsername()));
+
+    };
+
 
     public static Route updateUser= (Request request, Response response) -> {
 

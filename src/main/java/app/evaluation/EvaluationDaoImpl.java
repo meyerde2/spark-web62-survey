@@ -191,9 +191,9 @@ public class EvaluationDaoImpl implements EvaluationDao {
     @Override
     public List<LocationCount> getCountOfDifferentLocations(int surveyId, int elementId) {
 
-        List<LocationCount> countOfDifferentLocations=  null;
+        List<LocationCount> countOfDifferentLocations =  null;
 
-        String sql = "SELECT location, COUNT(*) AS `count` FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " GROUP BY location ;";
+        String sql = "SELECT location, COUNT(*) AS `count` FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + " AND location is not null  GROUP BY location ;";
 
         try (Connection con = sql2o.open()) {
 
@@ -202,15 +202,15 @@ public class EvaluationDaoImpl implements EvaluationDao {
         }catch (Exception e){
             System.out.println(e.toString());
         }
-        return countOfDifferentLocations;
 
+        return countOfDifferentLocations;
     }
 
     @Override
     public List<Integer> getAllAges(int surveyId, int elementId) {
 
 
-        List<Integer> allAges=  null;
+        List<Integer> allAges =  null;
 
         String sql = "SELECT age FROM execution_personaldata WHERE surveyId = " + surveyId + " AND elementId = " + elementId + "  AND age is not null  ORDER BY age ASC;";
 

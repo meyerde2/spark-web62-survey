@@ -4,6 +4,8 @@ import app.Application;
 import app.user.UserController;
 import app.util.Path;
 import app.util.ViewUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import org.json.simple.JSONObject;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -45,9 +47,7 @@ public class LoginController {
         //test
         request.session().removeAttribute("loggedOut");
 
-
         request.session().attribute("currentUser", getQueryUsername(request));
-
 
         if (getQueryLoginRedirect(request) != null) {
             response.redirect(getQueryLoginRedirect(request));
@@ -57,6 +57,27 @@ public class LoginController {
 
         response.redirect(Path.Web.INDEX);
         return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.INDEX));
+    };
+
+    public static Route jsonHandleLoginPost = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        if (UserController.authenticate(object.get("username").toString(), object.get("password").toString())) {
+            request.session().removeAttribute("loggedOut");
+            request.session().attribute("currentUser", object.get("username").toString());
+
+            System.out.println("request.session().attribute(currentUser)):   " + request.session().attribute("currentUser"));
+            return true;
+        }else{
+            request.session().removeAttribute("currentUser");
+            return false;
+        }
+
+
     };
 
     public static Route handleLogoutPost = (Request request, Response response) -> {

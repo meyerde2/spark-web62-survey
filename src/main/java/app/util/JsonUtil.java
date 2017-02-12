@@ -18,4 +18,5 @@ public class JsonUtil {
             throw new RuntimeException("IOEXception while mapping object (" + data + ") to JSON");
         }
     }
+
 }

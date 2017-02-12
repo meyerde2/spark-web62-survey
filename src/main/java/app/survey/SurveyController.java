@@ -8,7 +8,9 @@ import app.survey.executionElements.*;
 import app.user.User;
 import app.util.Path;
 import app.util.ViewUtil;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.base.Strings;
+import org.json.simple.JSONObject;
 import spark.ModelAndView;
 import spark.Request;
 import spark.Response;
@@ -33,8 +35,11 @@ import static app.util.RequestUtil.*;
 public class SurveyController {
 
     public static Route serveSurveyOverview = (Request request, Response response) -> {
-        LoginController.ensureUserIsLoggedIn(request, response);
+        //LoginController.ensureUserIsLoggedIn(request, response);
 
+        System.out.println(request.headers());
+        System.out.println("content-type:  " + request.headers("content-type"));
+        System.out.println("accept: "+request.headers("accept"));
         if (clientAcceptsHtml(request)) {
 
             System.out.println("SurveyController serveCreateSurvey");
@@ -49,12 +54,67 @@ public class SurveyController {
             attributes.put("currentPage", "survey");
             return Application.freeMarkerEngine.render(new ModelAndView(attributes, Path.Template.SURVEYOVERVIEW));
         }
-        if (clientAcceptsJson(request)) {
-            return dataToJson(userDao.getAllUserNames());
-        }
+
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+    public static Route jsonAllSurveyElements = (Request request, Response response) -> {
+
+        System.out.println("-----JSON--jsonAllSurveyElements--");
+        System.out.println("Benutzername: Session::   " + request.session().attribute("currentUser"));
+
+        System.out.println("getParamUsername:   " + getParamUsername(request));
+
+        User user = userDao.getUserByUsername(getParamUsername(request));
+
+        response.status(200);
+
+        System.out.println("AllSurveys:  " + surveyDao.getAllSurveys(user.getId()).toString());
+        System.out.println("user" + user.toString());
+
+
+        if (user.getRole() == 1){
+            return dataToJson(surveyDao.getAllSurveys(user.getId()));
+        }else{
+            return dataToJson(surveyDao.getAllSurveysRoleErsteller(user.getId()));
+        }
+
+    };
+
+    public static Route jsonGetSurveyById = (Request request, Response response) -> {
+
+        System.out.println("-----JSON--jsonGetSurveyById--" + getParamId(request));
+
+
+        response.status(200);
+        return dataToJson(surveyDao.getSurveyById(Integer.parseInt(getParamId(request))));
+
+    };
+
+    public static Route jsonUpdateSurveyElement = (Request request, Response response) -> {
+
+        System.out.println(" +++++++++++++ jsonUpdateSurveyElement ++++++++++++++++" );
+        int surveyId = Integer.parseInt(request.params(":id"));
+
+        System.out.println("body:  " + request.body());
+        System.out.println("getParamId:  " + surveyId);
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        surveyDao.updateSurvey(new Survey(surveyId, object.get("surveyTitle").toString(),
+                0,
+                Boolean.parseBoolean(object.get("ipAddress").toString()),
+                Boolean.parseBoolean(object.get("sessionId").toString()),
+                Boolean.parseBoolean(object.get("published").toString())));
+
+        response.status(200);
+
+        return dataToJson(surveyDao.getSurveyById(surveyId));
+
+    };
 
     public static Route createNewServery = (Request request, Response response) -> {
         LoginController.ensureUserIsLoggedIn(request, response);
@@ -97,6 +157,27 @@ public class SurveyController {
     };
 
 
+    public static Route jsonCreateNewServery = (Request request, Response response) -> {
+
+
+        System.out.println("SurveyController createNewServery");
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        User user = userDao.getUserByUsername(getParamUsername(request));
+
+        surveyDao.createNewSurvey(new Survey(0, object.get("surveyTitle").toString(),
+                user.getId(),
+                Boolean.parseBoolean(object.get("ipAddress").toString()),
+                Boolean.parseBoolean(object.get("sessionId").toString()),
+                false));
+
+        return true;
+    };
+
     public static Route serveSurveyCreation = (Request request, Response response) -> {
         LoginController.ensureUserIsLoggedIn(request, response);
 
@@ -121,6 +202,12 @@ public class SurveyController {
             return dataToJson(userDao.getAllUserNames());
         }
         return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+    public static Route jsonGetSurveyElementsById = (Request request, Response response) -> {
+
+            int surveyId = Integer.parseInt(request.params(":id"));
+            return dataToJson(surveyDao.getAllSurveyElements(surveyId));
     };
 
     public static Route updateSurvey = (Request request, Response response) -> {
@@ -184,6 +271,22 @@ public class SurveyController {
     };
 
 
+    public static Route jsonDeleteSurvey = (Request request, Response response) -> {
+
+
+        System.out.println("SurveyController serveSurveyControl UpdateSurvey");
+
+        int surveyId = Integer.parseInt(getParamId(request));
+
+        System.out.println("getParamId:  " + surveyId);
+
+        System.out.println("ipAddress:  " + request.queryParams("ipAddress"));
+        surveyDao.deleteSurvey(surveyDao.getSurveyById(surveyId));
+
+        return true;
+
+    };
+
     public static Route createTextElement = (Request request, Response response) -> {
 
         LoginController.ensureUserIsLoggedIn(request, response);
@@ -232,6 +335,34 @@ public class SurveyController {
         }
 
         return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+
+    public static Route jsonCreateTextElement = (Request request, Response response) -> {
+
+        System.out.println("SurveyController serveSurveyControl createTextElement----------------");
+
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        System.out.println(object.toString());
+        String pictureFilename = null;
+
+        int surveyId = Integer.parseInt(object.get("surveyId").toString());
+
+        // create survey element
+        SurveyElement surveyElement = new SurveyElement(0, surveyId, 1, object.get("elementTitle").toString());
+        int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+        // create text element
+        Text text = new Text(0, elementId, surveyElement.elementTitle, object.get("text").toString(), pictureFilename, surveyElement.getSurveyId());
+        surveyDao.createTextElement(text);
+
+        System.out.println("neues Textelement:  " + dataToJson(surveyDao.getTextElement(elementId)));
+        return dataToJson(surveyDao.getTextElement(elementId));
     };
 
 
@@ -286,7 +417,32 @@ public class SurveyController {
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+    public static Route jsonUpdateTextElement = (Request request, Response response) -> {
 
+
+        System.out.println("SurveyController serveSurveyControl updateTextElement----------------");
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        String pictureFilename = null;
+
+        System.out.println(object.toString());
+
+            Text text = new Text(0, Integer.parseInt(object.get("elementId").toString()),
+                    object.get("elementTitle").toString(),
+                    object.get("text").toString(),
+                    pictureFilename,
+                    Integer.parseInt(object.get("surveyId").toString()));
+
+            surveyDao.updateTextElement(text);
+
+        System.out.println("Update.");
+        return dataToJson(surveyDao.getTextElement(text.getElementId()));
+
+    };
     public static Route createPersonalDataElement = (Request request, Response response) -> {
 
         LoginController.ensureUserIsLoggedIn(request, response);
@@ -335,6 +491,45 @@ public class SurveyController {
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+    public static Route jsonCreatePersonalDataElement = (Request request, Response response) -> {
+
+            System.out.println("SurveyController serveSurveyControl createPersonalDataElement");
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        int surveyId = Integer.parseInt(object.get("surveyId").toString());
+
+
+        if ((object.get("elementTitle").toString().length() < 1) ||
+                (!Boolean.parseBoolean(object.get("firstname").toString()) &&
+                        !Boolean.parseBoolean(object.get("lastname").toString()) &&
+                        !Boolean.parseBoolean(object.get("age").toString()) &&
+                        !Boolean.parseBoolean(object.get("gender").toString()) &&
+                        !Boolean.parseBoolean(object.get("location").toString()))) {
+            System.out.println("false - - - - ");
+            return false;
+        }
+
+        SurveyElement surveyElement = new SurveyElement(0, surveyId, 2, object.get("elementTitle").toString());
+        int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+        PersonalData personalData = new PersonalData(0, elementId,
+                object.get("elementTitle").toString(),
+                Boolean.parseBoolean(object.get("firstname").toString()),
+                Boolean.parseBoolean(object.get("lastname").toString()),
+                Boolean.parseBoolean(object.get("age").toString()),
+                Boolean.parseBoolean(object.get("gender").toString()),
+                Boolean.parseBoolean(object.get("location").toString()),
+                surveyElement.getSurveyId());
+
+        surveyDao.createPersonalDataElement(personalData);
+
+        return dataToJson(surveyDao.getPersonalData(personalData.getElementId()));
+
+    };
 
     public static Route updatePersonalDataElement = (Request request, Response response) -> {
 
@@ -386,6 +581,41 @@ public class SurveyController {
 
         return ViewUtil.notAcceptable.handle(request, response);
     };
+
+    public static Route jsonUpdatePersonalDataElement = (Request request, Response response) -> {
+
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        System.out.println("object" + object.toString());
+        if ((object.get("elementTitle").toString().length() < 1) ||
+                (!Boolean.parseBoolean(object.get("firstname").toString()) &&
+                        !Boolean.parseBoolean(object.get("lastname").toString()) &&
+                        !Boolean.parseBoolean(object.get("age").toString()) &&
+                        !Boolean.parseBoolean(object.get("gender").toString()) &&
+                        !Boolean.parseBoolean(object.get("location").toString()))) {
+            System.out.println("false - - - - ");
+            return false;
+        }
+
+        PersonalData personalData = new PersonalData(0, Integer.parseInt(object.get("elementId").toString()),
+                object.get("elementTitle").toString(),
+                Boolean.parseBoolean(object.get("firstname").toString()),
+                Boolean.parseBoolean(object.get("lastname").toString()),
+                Boolean.parseBoolean(object.get("age").toString()),
+                Boolean.parseBoolean(object.get("gender").toString()),
+                Boolean.parseBoolean(object.get("location").toString()),
+                Integer.parseInt(object.get("surveyId").toString()));
+
+        surveyDao.updatePersonalDataElement(personalData);
+
+        return dataToJson(surveyDao.getPersonalData(personalData.getElementId()));
+
+    };
+
 
     public static Route createClosedQuestion = (Request request, Response response) -> {
 
@@ -439,6 +669,32 @@ public class SurveyController {
         }
 
         return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+
+    public static Route jsonCreateClosedQuestion = (Request request, Response response) -> {
+
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        int surveyId = Integer.parseInt(object.get("surveyId").toString());
+
+        SurveyElement surveyElement = new SurveyElement(0, surveyId, 3, object.get("elementTitle").toString());
+        int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+        ClosedQuestion closedQuestion = new ClosedQuestion(0, elementId, surveyElement.getElementTitle(),
+                object.get("situation").toString(), object.get("questiontext").toString(), object.get("answer1").toString(),
+                object.get("answer2").toString(), object.get("answer3").toString(), object.get("answer4").toString(),
+                object.get("answer5").toString(), object.get("answer6").toString(),
+                Boolean.parseBoolean(object.get("optionalTextfield").toString()), Boolean.parseBoolean(object.get("multipleSelection").toString()),
+                null, Integer.parseInt(object.get("surveyId").toString()));
+
+        surveyDao.createClosedQuestion(closedQuestion);
+
+        return dataToJson(surveyDao.getClosedQuestion(closedQuestion.getElementId()));
     };
 
     public static Route updateClosedQuestion = (Request request, Response response) -> {
@@ -510,6 +766,33 @@ public class SurveyController {
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+    public static Route jsonUpdateClosedQuestion = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        System.out.println("jsonUpdateClosedQuestion _ " +object.toString());
+        ClosedQuestion closedQuestion = new ClosedQuestion(0, Integer.parseInt(object.get("elementId").toString()), object.get("elementTitle").toString(),
+                object.get("situation").toString(),
+                object.get("questiontext").toString(),
+                object.get("answer1").toString(),
+                object.get("answer2").toString(),
+                object.get("answer3").toString(),
+                object.get("answer4").toString(),
+                object.get("answer5").toString(),
+                object.get("answer6").toString(),
+                Boolean.parseBoolean(object.get("optionalTextfield").toString()),
+                Boolean.parseBoolean(object.get("multipleSelection").toString()),
+                null,
+                Integer.parseInt(object.get("surveyId").toString()));
+        System.out.println("jsonUpdateClosedQuestion");
+        surveyDao.updateClosedQuestion(closedQuestion);
+        System.out.println("jsonUpdateClosedQuestion");
+        return dataToJson(surveyDao.getClosedQuestion(closedQuestion.getElementId()));
+
+    };
 
     public static Route createOpenQuestion = (Request request, Response response) -> {
 
@@ -574,6 +857,32 @@ public class SurveyController {
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+
+    public static Route jsonCreateOpenQuestion = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        SurveyElement surveyElement = new SurveyElement(0, Integer.parseInt(object.get("surveyId").toString()),
+                4, object.get("elementTitle").toString());
+
+        int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+        System.out.println("surveyElement.getElementTitle()):  " + surveyElement.getElementTitle());
+        OpenQuestion openQuestion = new OpenQuestion(0, elementId, surveyElement.getElementTitle(),
+                object.get("situation").toString(),
+                object.get("questiontext").toString(),
+                null,
+                Integer.parseInt(object.get("surveyId").toString()));
+
+        surveyDao.createOpenQuestion(openQuestion);
+
+        return dataToJson(surveyDao.getOpenedQuestion(openQuestion.getElementId()));
+    };
+
+
     public static Route updateOpenQuestion = (Request request, Response response) -> {
 
         LoginController.ensureUserIsLoggedIn(request, response);
@@ -626,6 +935,25 @@ public class SurveyController {
         return ViewUtil.notAcceptable.handle(request, response);
     };
 
+
+    public static Route jsonUpdateOpenQuestion = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        OpenQuestion openQuestion = new OpenQuestion(0, Integer.parseInt(object.get("elementId").toString()), object.get("elementTitle").toString(),
+                object.get("situation").toString(),
+                object.get("questiontext").toString(),
+                null,
+                Integer.parseInt(object.get("surveyId").toString()));
+
+        surveyDao.updateOpenQuestion(openQuestion);
+        return dataToJson(surveyDao.getOpenedQuestion(openQuestion.getElementId()));
+    };
+
+
     public static Route createScoreTable = (Request request, Response response) -> {
 
         LoginController.ensureUserIsLoggedIn(request, response);
@@ -634,7 +962,7 @@ public class SurveyController {
 
             System.out.println("SurveyController serveSurveyControl create scoretable..");
 
-            try{
+            try {
 
                 Map attributes = new HashMap<>();
                 attributes.putAll(ViewUtil.getTemplateVariables(request));
@@ -655,13 +983,13 @@ public class SurveyController {
 
                 int surveyId = Integer.parseInt(request.queryParams("surveyId"));
 
-                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)){
+                if ((request.queryParams("situation").toString().length() < 1) || (request.queryParams("elementTitle").toString().length() < 1)) {
                     return false;
                 }
-                if("wrongFormat".equals(pictureFilename)){
+                if ("wrongFormat".equals(pictureFilename)) {
                     attributes.put("pictureUpload", "wrongFormat");
                     return false;
-                }else{
+                } else {
                     System.out.println("right Format");
 
                     SurveyElement surveyElement = new SurveyElement(0, surveyId, 5, request.queryParams("elementTitle").toString());
@@ -683,15 +1011,40 @@ public class SurveyController {
 
                 }
 
-            }catch (Exception e){
+            } catch (Exception e) {
                 System.out.println("EXCEPTION:   " + e.toString());
             }
-
             return true;
-
         }
-
         return ViewUtil.notAcceptable.handle(request, response);
+    };
+
+    public static Route jsonCreateScoreTable = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        SurveyElement surveyElement = new SurveyElement(0, Integer.parseInt(object.get("surveyId").toString()),
+                5, object.get("elementTitle").toString());
+        int elementId = surveyDao.createNewSurveyElement(surveyElement);
+
+        ScoreTable scoreTable = new ScoreTable(0, elementId, surveyElement.getElementTitle(),
+                object.get("situation").toString(),
+                object.get("questiontext").toString(),
+                object.get("criterion1").toString(),
+                object.get("criterion2").toString(),
+                object.get("criterion3").toString(),
+                object.get("criterion4").toString(),
+                object.get("criterion5").toString(),
+                object.get("criterion6").toString(),
+                null,
+                Integer.parseInt(object.get("surveyId").toString()));
+
+        surveyDao.createScoreTableQuestion(scoreTable);
+
+        return dataToJson(surveyDao.getScoreTable(scoreTable.getElementId()));
     };
 
 
@@ -755,9 +1108,32 @@ public class SurveyController {
     };
 
 
-    public static Route serveUpdateSurveyElement = (Request request, Response response) -> {
 
-        LoginController.ensureUserIsLoggedIn(request, response);
+    public static Route jsonUpdateScoreTable = (Request request, Response response) -> {
+
+        Map<String, Object> map = new HashMap<>();
+        ObjectMapper mapper = new ObjectMapper();
+        map = mapper.readValue(request.body(), HashMap.class);
+        JSONObject object = new JSONObject(map);
+
+        ScoreTable scoreTable = new ScoreTable(0, Integer.parseInt(object.get("elementId").toString()), object.get("elementTitle").toString(),
+                object.get("situation").toString(),
+                object.get("questiontext").toString(),
+                object.get("criterion1").toString(),
+                object.get("criterion2").toString(),
+                object.get("criterion3").toString(),
+                object.get("criterion4").toString(),
+                object.get("criterion5").toString(),
+                object.get("criterion6").toString(),
+                null,
+                Integer.parseInt(object.get("surveyId").toString()));
+
+        surveyDao.updateScoreTableQuestion(scoreTable);
+        return dataToJson(surveyDao.getScoreTable(scoreTable.getElementId()));
+    };
+
+
+    public static Route serveUpdateSurveyElement = (Request request, Response response) -> {
 
         System.out.println("------------------------UPDATE--------------------------------");
         switch (getParamElementtype(request)) {

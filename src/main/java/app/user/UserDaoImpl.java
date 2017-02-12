@@ -27,6 +27,25 @@ public class UserDaoImpl implements UserDao{
     }
 
     @Override
+    public List<User> getAllUsersForRole(String username, int role) {
+
+        if (role == 1){
+            try (Connection conn = sql2o.open()) {
+                users = conn.createQuery("SELECT * FROM users")
+                        .executeAndFetch(User.class);
+                return users;
+            }
+        }else{
+            try (Connection conn = sql2o.open()) {
+                users = conn.createQuery("SELECT * FROM users WHERE username = '"+ username + "' ;")
+                        .executeAndFetch(User.class);
+                return users;
+            }
+        }
+
+    }
+
+    @Override
     public User getUserByUsername(String username) {
 
         System.out.println("username: " + username);

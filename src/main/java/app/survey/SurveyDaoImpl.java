@@ -30,6 +30,15 @@ public class SurveyDaoImpl implements SurveyDao {
     }
 
     @Override
+    public List<Survey> getAllSurveysRoleErsteller(int userId) {
+        List<Survey> surveyList;
+        try (Connection conn = sql2o.open()) {
+            surveyList= conn.createQuery("SELECT * FROM survey WHERE userId = " + userId + " ;").executeAndFetch(Survey.class);
+            return surveyList;
+        }
+    }
+
+    @Override
     public List<SurveyElement> getAllSurveyElements(int surveyId) {
 
         List<SurveyElement> surveyElements;
