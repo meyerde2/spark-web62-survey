@@ -4,7 +4,6 @@
     <h2>${msg.get("INDEX_HEADING_INFO")}</h2>
 
  <div>
-
     <p>
         Zusammenfassend bestehen die wesentlichen Anforderungen an die praktische Realisierung des Online-Umfrage-Tools,
         die durch das Assignment im Modul WEB61 entstanden sind, aus einer Login- bzw. Logout-Funktionalität und einem damit einhergehenden Rollensystem für Umfrageersteller sowie Administratoren.

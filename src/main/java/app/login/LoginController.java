@@ -66,6 +66,9 @@ public class LoginController {
         map = mapper.readValue(request.body(), HashMap.class);
         JSONObject object = new JSONObject(map);
 
+        System.out.println("USERNAME: jsonHandleLoginPost:--  " + object.get("username").toString());
+        System.out.println("password: jsonHandleLoginPost:--  " + object.get("password").toString());
+
         if (UserController.authenticate(object.get("username").toString(), object.get("password").toString())) {
             request.session().removeAttribute("loggedOut");
             request.session().attribute("currentUser", object.get("username").toString());

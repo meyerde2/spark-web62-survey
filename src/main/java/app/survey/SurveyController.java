@@ -93,7 +93,6 @@ public class SurveyController {
 
     public static Route jsonUpdateSurveyElement = (Request request, Response response) -> {
 
-        System.out.println(" +++++++++++++ jsonUpdateSurveyElement ++++++++++++++++" );
         int surveyId = Integer.parseInt(request.params(":id"));
 
         System.out.println("body:  " + request.body());

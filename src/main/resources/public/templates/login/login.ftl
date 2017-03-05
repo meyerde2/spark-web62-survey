@@ -4,6 +4,8 @@
 
 <div class="col-md-8">
 
+
+
     <h1>${msg.get("INDEX_HEADING")}</h1>
     <p>
     Eine Online-Umfrage stellt im Allgemeinen einen digitalen Fragebogen dar, der im Webbrowser beantwortet wird und prinzipiell zwei Strukturtypen enthält,
@@ -80,6 +82,13 @@
         </div>
   </form>
 
+    <h1>NEU: Laden Sie sich die Android-App herunter:</h1>
+    <p>
+        <a href="/APK/web63-armv7.apk" target="_blank">web63-armv7.apk</a>
+    </p>
+    <p>
+        <a href="/APK/web63-x86.apk" target="_blank">web63-x86.apk</a>
+    </p>
 
     <!-- Modal -->
     <div id="loginNewUser" class="modal fade" role="dialog">

@@ -27,14 +27,22 @@ public class UserController {
     // Authenticate the app.user by hashing the inputted password using the stored salt,
     // then comparing the generated hashed password to the stored hashed password
     public static boolean authenticate(String username, String password) {
+
+        System.out.println("authenticate: Username: ----  " + username);
+        System.out.println("authenticate: Password: _---- " + password);
+
         if (username.isEmpty() || password.isEmpty()) {
             return false;
         }
+        userDao.getAllUsers();
         User user = userDao.getUserByUsername(username);
         if (user == null) {
             return false;
         }
         String hashedPassword = BCrypt.hashpw(password, user.getSalt());
+
+        System.out.println("eingegebenes hashedPW:  ---------- " + hashedPassword);
+        System.out.println("existierendes hashedPW:  --------- " + user.getHashedPassword());
         return hashedPassword.equals(user.getHashedPassword());
     }
 
@@ -142,6 +150,7 @@ public class UserController {
         map = mapper.readValue(request.body(), HashMap.class);
         JSONObject object = new JSONObject(map);
 
+        boolean result = false;
 
         System.out.println("_________________________________________json create new User__________________________________________________________________________");
             if (object.get("password").toString().length() >= 6 && object.get("password").toString().equals(object.get("confirmedPassword").toString())) {
@@ -152,10 +161,11 @@ public class UserController {
 
                 User newUser = new User(0,object.get("username").toString(), object.get("firstname").toString(), object.get("lastname").toString(), salt, hashedPassword, Integer.parseInt(object.get("role").toString()), 0);
 
-                System.out.println("Status createUser" + userDao.createUser(newUser));
-                return dataToJson(userDao.getUserByUsername(newUser.getUsername()));
+                result  = userDao.createUser(newUser);
+                System.out.println("Status createUser" + result);
+                return result;
             }
-        return "error: passwords not equal";
+        return false;
     };
 
     public static Route serveNewUserLogin = (Request request, Response response) -> {
@@ -240,6 +250,7 @@ public class UserController {
         }
 
         user.setRole(Integer.parseInt(object.get("role").toString()));
+        System.out.println("USER: " + user.toString());
         userDao.updateUser(user);
 
         return dataToJson(userDao.getUserByUsername(user.getUsername()));
